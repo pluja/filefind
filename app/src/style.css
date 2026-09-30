@@ -1,0 +1,106 @@
+.search-bar {
+  padding: 0 12px 10px 12px;
+}
+
+entry.hero-search,
+.hero-search {
+  min-height: 46px;
+  font-size: 1.2em;
+  border-radius: 12px;
+  padding: 0 14px;
+}
+
+.hero-search image {
+  opacity: 0.6;
+}
+
+.results-count {
+  font-size: 0.85em;
+  font-weight: 600;
+  opacity: 0.55;
+  margin: 4px 14px 6px 14px;
+}
+
+list.results {
+  background: none;
+}
+
+list.results > row {
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 1px 0;
+}
+
+list.results > row:hover {
+  background-color: alpha(currentColor, 0.05);
+}
+
+list.results > row:selected {
+  background-color: alpha(var(--accent-bg-color), 0.16);
+}
+
+list.results > row:selected:focus-within {
+  background-color: alpha(var(--accent-bg-color), 0.24);
+}
+
+.result-title {
+  font-weight: 600;
+}
+
+.result-path,
+.result-date {
+  font-size: 0.85em;
+  opacity: 0.6;
+  font-feature-settings: "tnum";
+}
+
+.result-snippet {
+  font-size: 0.93em;
+  margin-top: 3px;
+}
+
+.result-action {
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+list.results > row:hover .result-action,
+list.results > row:selected .result-action {
+  opacity: 1;
+}
+
+.status-bar {
+  padding: 6px 12px;
+  font-size: 0.9em;
+}
+
+.status-bar label {
+  opacity: 0.7;
+}
+
+.sidebar-path {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.sidebar-remove {
+  opacity: 0;
+  min-width: 24px;
+  min-height: 24px;
+  transition: opacity 150ms;
+}
+
+.navigation-sidebar > row:hover .sidebar-remove,
+.sidebar-remove:focus {
+  opacity: 0.8;
+}
+
+.sidebar-footer {
+  padding: 8px 10px 12px 10px;
+}
+
+.sidebar-status {
+  font-size: 0.8em;
+  opacity: 0.55;
+  font-feature-settings: "tnum";
+}

@@ -1,0 +1,43 @@
+id: io.github.filefind.Filefind
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: filefind
+separate-locales: false
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Read-only access to the places users keep documents. Filefind never modifies files.
+  - --filesystem=home:ro
+  - --filesystem=/media:ro
+  - --filesystem=/run/media:ro
+  - --filesystem=/mnt:ro
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  env:
+    CARGO_HOME: /run/build/filefind/cargo
+    CARGO_NET_OFFLINE: 'true'
+modules:
+  - name: filefind
+    buildsystem: simple
+    build-commands:
+      - cargo build --release --locked --offline -p filefind
+      - install -Dm755 target/release/filefind -t /app/bin
+      - for lang in $(cat po/LINGUAS); do install -d /app/share/locale/$lang/LC_MESSAGES && msgfmt --check -o /app/share/locale/$lang/LC_MESSAGES/filefind.mo po/$lang.po; done
+      - install -Dm644 data/io.github.filefind.Filefind.desktop -t /app/share/applications
+      - install -Dm644 data/io.github.filefind.Filefind.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 data/icons/io.github.filefind.Filefind.svg -t /app/share/icons/hicolor/scalable/apps
+      - install -Dm644 data/icons/io.github.filefind.Filefind-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps
+    sources:
+      - type: dir
+        path: .
+        skip:
+          - target
+          - .flatpak-builder
+          - build-dir
+          - repo
+      - build-aux/cargo-sources.json

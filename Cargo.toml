@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = ["core", "app"]
+
+[profile.release]
+lto = "thin"
+codegen-units = 4
+strip = true
+panic = "unwind"

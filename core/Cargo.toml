@@ -1,0 +1,25 @@
+[package]
+name = "filefind-core"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+
+[dependencies]
+tantivy = "0.26"
+levenshtein_automata = "0.2"
+tantivy-fst = "0.5"
+pdf-extract = "0.12"
+cfb = "0.15"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+quick-xml = "0.38"
+walkdir = "2"
+notify = "8"
+rayon = "1"
+wait-timeout = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+libc = "0.2"
+log = "0.4"
+
+[dev-dependencies]
+tempfile = "3"

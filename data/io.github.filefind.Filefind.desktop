@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Filefind
+GenericName=File Search
+Comment=Find any file by what's inside it
+Exec=filefind
+Icon=io.github.filefind.Filefind
+Terminal=false
+Categories=Utility;Core;GTK;
+Keywords=search;find;files;documents;pdf;full text;fuzzy;
+StartupNotify=true

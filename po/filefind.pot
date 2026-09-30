@@ -1,0 +1,273 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the filefind package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: filefind\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-30 11:08+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: app/src/window.rs:84 app/src/sidebar.rs:20
+msgid "Library"
+msgstr ""
+
+#: app/src/window.rs:89
+msgid "_Add Folder…"
+msgstr ""
+
+#: app/src/window.rs:90
+msgid "_Rebuild Index"
+msgstr ""
+
+#: app/src/window.rs:93
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: app/src/window.rs:94
+msgid "_About Filefind"
+msgstr ""
+
+#: app/src/window.rs:100
+msgid "Main Menu"
+msgstr ""
+
+#: app/src/window.rs:106
+msgid "Search files and documents"
+msgstr ""
+
+#: app/src/window.rs:117
+msgid "Welcome to Filefind"
+msgstr ""
+
+#: app/src/window.rs:118
+msgid ""
+"Add the folders you want to search. Filefind reads your documents — PDF, "
+"Word, LibreOffice, text and more — so you can find anything by what's inside."
+msgstr ""
+
+#: app/src/window.rs:121 app/src/sidebar.rs:42
+msgid "Add Folder…"
+msgstr ""
+
+#: app/src/window.rs:129
+msgid "Search Your Files"
+msgstr ""
+
+#: app/src/window.rs:132
+msgid "No Results Found"
+msgstr ""
+
+#: app/src/window.rs:133
+msgid "Check the spelling or try different words."
+msgstr ""
+
+#: app/src/window.rs:265
+msgid "The search index could not be opened. Try Rebuild Index from the menu."
+msgstr ""
+
+#: app/src/window.rs:325
+msgid "Drop folders here to add them to your library"
+msgstr ""
+
+#: app/src/window.rs:433
+msgid "The Filefind Contributors"
+msgstr ""
+
+#: app/src/window.rs:434
+msgid "Find any file by what's inside it."
+msgstr ""
+
+#: app/src/window.rs:436
+msgid "translator-credits"
+msgstr ""
+
+#: app/src/window.rs:445
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: app/src/window.rs:451
+msgid "Search"
+msgstr ""
+
+#: app/src/window.rs:452
+msgid "Focus search"
+msgstr ""
+
+#: app/src/window.rs:453
+msgid "Open first result"
+msgstr ""
+
+#: app/src/window.rs:454
+msgid "Move to results"
+msgstr ""
+
+#: app/src/window.rs:455
+msgid "Clear search"
+msgstr ""
+
+#: app/src/window.rs:457
+msgid "Results"
+msgstr ""
+
+#: app/src/window.rs:458
+msgid "Open file"
+msgstr ""
+
+#: app/src/window.rs:459
+msgid "Show in folder"
+msgstr ""
+
+#: app/src/window.rs:460
+msgid "Copy path"
+msgstr ""
+
+#: app/src/window.rs:461
+msgid "More actions"
+msgstr ""
+
+#: app/src/window.rs:461
+msgid "Right-click"
+msgstr ""
+
+#: app/src/window.rs:463
+msgid "Window"
+msgstr ""
+
+#: app/src/window.rs:464
+msgid "Show or hide the library"
+msgstr ""
+
+#: app/src/window.rs:465
+msgid "Add folder"
+msgstr ""
+
+#: app/src/window.rs:466
+msgid "Close window"
+msgstr ""
+
+#: app/src/window.rs:467
+msgid "Quit"
+msgstr ""
+
+#: app/src/window.rs:528
+msgid "Top {shown} of {total} results"
+msgstr ""
+
+#: app/src/window.rs:532
+msgid "{} result"
+msgid_plural "{} results"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/src/window.rs:582 app/src/window.rs:779
+msgid "Show in Folder"
+msgstr ""
+
+#: app/src/window.rs:626
+msgid "Reading your files. You can start searching right away."
+msgstr ""
+
+#: app/src/window.rs:628
+msgid "{files} file in {folders}"
+msgid_plural "{files} files in {folders}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/src/window.rs:630
+msgid "{} folder"
+msgid_plural "{} folders"
+msgstr[0] ""
+msgstr[1] ""
+
+#: app/src/window.rs:641
+msgid "Indexing {done} of {total} files…"
+msgstr ""
+
+#: app/src/window.rs:666
+msgid "Could not update the search index"
+msgstr ""
+
+#: app/src/window.rs:681
+msgid "Could not open the file"
+msgstr ""
+
+#: app/src/window.rs:693
+msgid "Could not show the folder"
+msgstr ""
+
+#: app/src/window.rs:702
+msgid "Path copied"
+msgstr ""
+
+#: app/src/window.rs:707
+msgid "Add Folders to Library"
+msgstr ""
+
+#: app/src/window.rs:708
+msgid "Add"
+msgstr ""
+
+#: app/src/window.rs:727
+msgid "“{}” is already in your library"
+msgstr ""
+
+#: app/src/window.rs:728
+msgid "“{}” now includes folders that were added before"
+msgstr ""
+
+#: app/src/window.rs:742
+msgid "Removed “{}” from your library"
+msgstr ""
+
+#: app/src/window.rs:749
+msgid "Could not save your library"
+msgstr ""
+
+#: app/src/window.rs:762
+msgid "Rebuilding the index"
+msgstr ""
+
+#: app/src/window.rs:764
+msgid "Restart Filefind to rebuild the index"
+msgstr ""
+
+#: app/src/window.rs:779
+msgid "Open"
+msgstr ""
+
+#: app/src/window.rs:779
+msgid "Copy Path"
+msgstr ""
+
+#: app/src/sidebar.rs:26
+msgid "Add the folders you want to search"
+msgstr ""
+
+#: app/src/sidebar.rs:67
+msgid "Not available"
+msgstr ""
+
+#: app/src/sidebar.rs:77
+msgid "Remove from Library"
+msgstr ""
+
+#: app/src/sidebar.rs:102
+msgid "Indexing…"
+msgstr ""
+
+#: app/src/sidebar.rs:104
+msgid "{} file indexed"
+msgid_plural "{} files indexed"
+msgstr[0] ""
+msgstr[1] ""
