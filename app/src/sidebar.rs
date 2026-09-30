@@ -1,6 +1,7 @@
 //! The library sidebar: folders to search in, each folder's options, and indexing status.
 
 use std::cell::{Cell, RefCell};
+use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::time::Instant;
 
@@ -12,8 +13,8 @@ use crate::backend::{Backend, IndexState};
 use crate::i18n::{fmt_count, ntr, tr};
 use crate::window::{display_name, display_path};
 
-/// Library folders with their file counts, once known.
-type ShownFolders = (Vec<Folder>, Option<Vec<u64>>);
+/// Library folders, their file counts once known, and the excluded folders.
+type ShownFolders = (Vec<Folder>, Option<Vec<u64>>, Vec<PathBuf>);
 type ScopeCallback = Rc<dyn Fn(Option<Folder>)>;
 
 pub struct Sidebar {
@@ -105,8 +106,10 @@ impl Sidebar {
             _ => None,
         };
         self.status.update(&state);
-        let shown = Some((library.folders.clone(), counts.clone()));
-        if *self.shown.borrow() == shown || (counts.is_none() && self.shown.borrow().as_ref().is_some_and(|s| s.0 == library.folders)) {
+        let excluded = self.backend.settings().excluded_folders;
+        let shown = Some((library.folders.clone(), counts.clone(), excluded.clone()));
+        let same_folders = self.shown.borrow().as_ref().is_some_and(|s| s.0 == library.folders && s.2 == excluded);
+        if *self.shown.borrow() == shown || (counts.is_none() && same_folders) {
             return;
         }
         let selected = self.scope().map(|f| f.path);
@@ -117,7 +120,8 @@ impl Sidebar {
             self.list.remove(&row);
         }
         for (i, folder) in library.folders.iter().enumerate() {
-            self.list.append(&self.folder_row(folder, counts.as_ref().and_then(|c| c.get(i)).copied()));
+            let inside = excluded_inside(folder, &excluded);
+            self.list.append(&self.folder_row(folder, counts.as_ref().and_then(|c| c.get(i)).copied(), &inside));
         }
         let position = selected.as_ref().and_then(|p| library.folders.iter().position(|f| &f.path == p));
         self.list.select_row(self.list.row_at_index(position.map_or(0, |i| i as i32 + 1)).as_ref());
@@ -134,10 +138,10 @@ impl Sidebar {
         self.all_count.set_label(&total.map(fmt_count).unwrap_or_default());
     }
 
-    fn folder_row(self: &Rc<Self>, folder: &Folder, count: Option<u64>) -> gtk::ListBoxRow {
+    fn folder_row(self: &Rc<Self>, folder: &Folder, count: Option<u64>, excluded: &[PathBuf]) -> gtk::ListBoxRow {
         let available = folder.path.is_dir();
-        let scope = if folder.include_subfolders { tr("Includes subfolders") } else { tr("This folder only") };
-        let subtitle = if available { scope } else { tr("Not available") };
+        let subtitle = if folder.include_subfolders { tr("Includes subfolders") } else { tr("This folder only") };
+        let subtitle = if available { subtitle } else { tr("Not available") };
         let count_label = gtk::Label::new(count.map(fmt_count).as_deref());
         count_label.add_css_class("sidebar-count");
 
@@ -145,22 +149,65 @@ impl Sidebar {
             .icon_name("view-more-symbolic")
             .tooltip_text(tr("Folder Options"))
             .valign(gtk::Align::Center)
-            .popover(&self.folder_popover(folder))
+            .popover(&self.folder_popover(folder, excluded))
             .build();
         menu.add_css_class("flat");
         menu.add_css_class("circular");
         menu.add_css_class("sidebar-menu");
 
+        // A crossed-out eye tells that some subfolders are left out; the tooltip says which.
+        let counts = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+        if !excluded.is_empty() {
+            let n = excluded.len() as u64;
+            let hidden = gtk::Image::from_icon_name("view-conceal-symbolic");
+            hidden.add_css_class("sidebar-excluded");
+            hidden.set_tooltip_text(Some(&ntr("{} excluded", "{} excluded", n).replace("{}", &n.to_string())));
+            counts.append(&hidden);
+        }
+        counts.append(&count_label);
         let icon = if available { "folder-symbolic" } else { "folder-remote-symbolic" };
-        let row = sidebar_row(icon, &display_name(&folder.path), Some(&subtitle), &count_label, Some(&menu));
-        row.set_tooltip_text(Some(&display_path(&folder.path)));
+        let row = sidebar_row(icon, &display_name(&folder.path), Some(&subtitle), &counts, Some(&menu));
+        let mut tooltip = display_path(&folder.path);
+        if !excluded.is_empty() {
+            tooltip.push_str(&format!("\n\n{}", tr("Excluded:")));
+            for path in excluded {
+                tooltip.push_str(&format!("\n{}", relative(folder, path)));
+            }
+        }
+        row.set_tooltip_text(Some(&tooltip));
         if !available {
             row.add_css_class("unavailable");
         }
         row
     }
 
-    fn folder_popover(self: &Rc<Self>, folder: &Folder) -> gtk::Popover {
+    fn excluded_row(self: &Rc<Self>, folder: &Folder, path: &Path) -> gtk::Box {
+        let label = gtk::Label::builder()
+            .label(relative(folder, path))
+            .xalign(0.0)
+            .hexpand(true)
+            .ellipsize(pango::EllipsizeMode::Middle)
+            .tooltip_text(display_path(path))
+            .build();
+        let remove = gtk::Button::builder().icon_name("window-close-symbolic").tooltip_text(tr("Stop Excluding")).build();
+        remove.add_css_class("flat");
+        remove.add_css_class("circular");
+        let target = path.to_owned();
+        remove.connect_clicked(glib::clone!(#[weak(rename_to = sidebar)] self, move |button| {
+            if let Some(popover) = button.ancestor(gtk::Popover::static_type()).and_downcast::<gtk::Popover>() {
+                popover.popdown();
+            }
+            sidebar.backend.update_settings(|s| s.excluded_folders.retain(|f| f != &target));
+        }));
+        let row = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+        row.add_css_class("excluded-row");
+        row.append(&gtk::Image::from_icon_name("folder-symbolic"));
+        row.append(&label);
+        row.append(&remove);
+        row
+    }
+
+    fn folder_popover(self: &Rc<Self>, folder: &Folder, excluded: &[PathBuf]) -> gtk::Popover {
         let name = display_name(&folder.path);
         let title = gtk::Label::builder().label(&name).xalign(0.0).ellipsize(pango::EllipsizeMode::Middle).build();
         title.add_css_class("heading");
@@ -182,12 +229,9 @@ impl Sidebar {
         hint.add_css_class("dim-label");
         hint.add_css_class("caption");
 
-        let exclude = gtk::Button::builder().label(tr("Exclude a Subfolder…")).build();
-        exclude.add_css_class("flat");
-        let reveal = gtk::Button::builder().label(tr("Open in File Manager")).build();
-        reveal.add_css_class("flat");
-        let remove = gtk::Button::builder().label(tr("Remove from Library")).build();
-        remove.add_css_class("flat");
+        let exclude = menu_item("view-conceal-symbolic", &tr("Exclude a Subfolder…"));
+        let reveal = menu_item("folder-open-symbolic", &tr("Open in File Manager"));
+        let remove = menu_item("user-trash-symbolic", &tr("Remove from Library"));
         remove.add_css_class("destructive-text");
 
         let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
@@ -197,6 +241,16 @@ impl Sidebar {
         content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
         content.append(&switch_row);
         content.append(&hint);
+        if !excluded.is_empty() {
+            content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+            let heading = gtk::Label::builder().label(tr("Excluded here")).xalign(0.0).build();
+            heading.add_css_class("caption-heading");
+            heading.add_css_class("dim-label");
+            content.append(&heading);
+            for path in excluded {
+                content.append(&self.excluded_row(folder, path));
+            }
+        }
         content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
         content.append(&exclude);
         content.append(&reveal);
@@ -227,11 +281,34 @@ impl Sidebar {
     }
 }
 
+/// Excluded folders below `folder` that would otherwise be indexed.
+fn excluded_inside(folder: &Folder, excluded: &[PathBuf]) -> Vec<PathBuf> {
+    if !folder.include_subfolders {
+        return Vec::new();
+    }
+    excluded.iter().filter(|p| p.starts_with(&folder.path) && **p != folder.path).cloned().collect()
+}
+
+fn relative(folder: &Folder, path: &Path) -> String {
+    path.strip_prefix(&folder.path).map(|r| r.display().to_string()).unwrap_or_else(|_| display_path(path))
+}
+
+/// A flat, left-aligned button with an icon, like an item in a menu.
+fn menu_item(icon: &str, label: &str) -> gtk::Button {
+    let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    content.append(&gtk::Image::from_icon_name(icon));
+    content.append(&gtk::Label::new(Some(label)));
+    let button = gtk::Button::builder().child(&content).build();
+    button.add_css_class("flat");
+    button.add_css_class("menu-item");
+    button
+}
+
 fn sidebar_row(
     icon: &str,
     title: &str,
     subtitle: Option<&str>,
-    count: &gtk::Label,
+    count: &impl IsA<gtk::Widget>,
     suffix: Option<&gtk::MenuButton>,
 ) -> gtk::ListBoxRow {
     let title_label = gtk::Label::builder().label(title).xalign(0.0).ellipsize(pango::EllipsizeMode::End).build();

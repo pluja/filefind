@@ -290,3 +290,28 @@ button.status-failures {
 .preview-table label.match {
   background-color: alpha(#ffc233, 0.35);
 }
+
+.excluded-row {
+  padding: 0 0 0 6px;
+}
+
+.excluded-row image {
+  opacity: 0.6;
+}
+
+.sidebar-excluded {
+  opacity: 0.6;
+  -gtk-icon-size: 14px;
+}
+
+.folder-popover button.menu-item {
+  padding: 6px 10px;
+}
+
+.folder-popover button.menu-item image {
+  opacity: 0.8;
+}
+
+.row-icon {
+  opacity: 0.8;
+}

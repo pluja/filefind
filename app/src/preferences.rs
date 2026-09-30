@@ -12,8 +12,15 @@ use crate::window::display_path;
 
 const RESULT_LIMITS: [usize; 4] = [50, 100, 200, 500];
 
-fn switch_row(title: &str, subtitle: &str, active: bool, apply: impl Fn(bool) + 'static) -> adw::SwitchRow {
+fn icon(name: &str) -> gtk::Image {
+    let image = gtk::Image::from_icon_name(name);
+    image.add_css_class("row-icon");
+    image
+}
+
+fn switch_row(icon_name: &str, title: &str, subtitle: &str, active: bool, apply: impl Fn(bool) + 'static) -> adw::SwitchRow {
     let row = adw::SwitchRow::builder().title(title).subtitle(subtitle).active(active).build();
+    row.add_prefix(&icon(icon_name));
     row.connect_active_notify(move |row| apply(row.is_active()));
     row
 }
@@ -40,11 +47,13 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
         let code = (row.selected() as usize).checked_sub(1).and_then(|i| crate::i18n::LANGUAGES.get(i)).map(|(c, _)| c.to_string());
         b.update_settings(|s| s.language = code);
     });
+    language.add_prefix(&icon("preferences-desktop-locale-symbolic"));
     general.add(&language);
     search.add(&general);
     let matching = adw::PreferencesGroup::new();
     let b = backend.clone();
     matching.add(&switch_row(
+        "accessories-dictionary-symbolic",
         &tr("Match Word Forms"),
         &tr("Searching for “invoices” also finds “invoice”, in English and Spanish"),
         settings.word_forms,
@@ -58,8 +67,9 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
         let limit = RESULT_LIMITS[(row.selected() as usize).min(RESULT_LIMITS.len() - 1)];
         b.update_settings(|s| s.max_results = limit);
     });
+    results.add_prefix(&icon("view-list-symbolic"));
     matching.add(&results);
-    let tips = adw::ButtonRow::builder().title(tr("Search Tips")).end_icon_name("go-next-symbolic").action_name("win.search-tips").build();
+    let tips = adw::ButtonRow::builder().title(tr("Search Tips")).start_icon_name("help-about-symbolic").end_icon_name("go-next-symbolic").action_name("win.search-tips").build();
     let tips_group = adw::PreferencesGroup::new();
     tips_group.add(&tips);
     search.add(&matching);
@@ -70,6 +80,7 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
     let what = adw::PreferencesGroup::builder().title(tr("What to Index")).build();
     let b = backend.clone();
     what.add(&switch_row(
+        "image-x-generic-symbolic",
         &tr("Find Other Files by Name"),
         &tr("Photos, music, archives and other files that aren't documents"),
         settings.file_names,
@@ -77,6 +88,7 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
     ));
     let b = backend.clone();
     what.add(&switch_row(
+        "view-reveal-symbolic",
         &tr("Include Hidden Files"),
         &tr("Files and folders whose names start with a dot"),
         settings.hidden_files,
@@ -85,6 +97,7 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
     let when = adw::PreferencesGroup::builder().title(tr("Background")).build();
     let b = backend.clone();
     when.add(&switch_row(
+        "document-open-recent-symbolic",
         &tr("Index in the Background"),
         &tr("Keep the index up to date while Filefind is closed, starting when you log in"),
         settings.background,
@@ -112,16 +125,20 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
     let failed_value = value_label();
     failed.add_suffix(&failed_value);
     failed.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
+    files.add_prefix(&icon("text-x-generic-symbolic"));
+    size.add_prefix(&icon("drive-harddisk-symbolic"));
+    failed.add_prefix(&icon("dialog-warning-symbolic"));
     status.add(&files);
     status.add(&size);
     status.add(&failed);
     let rebuild_group = adw::PreferencesGroup::builder()
         .description(tr("Reads every file again. Only needed if results seem wrong."))
         .build();
-    rebuild_group.add(&adw::ButtonRow::builder().title(tr("Rebuild Index")).action_name("win.rebuild").build());
+    rebuild_group.add(&adw::ButtonRow::builder().title(tr("Rebuild Index")).start_icon_name("view-refresh-symbolic").action_name("win.rebuild").build());
 
     let advanced = adw::PreferencesGroup::builder().title(tr("Advanced")).build();
     let location = adw::ExpanderRow::builder().title(tr("Index Location")).build();
+    location.add_prefix(&icon("folder-symbolic"));
     let note = gtk::Label::builder()
         .label(tr("The index is stored with Filefind's other data. Move it only if you want it on another disk, for example a larger one."))
         .wrap(true)
@@ -130,8 +147,8 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::Pr
     note.add_css_class("dim-label");
     note.add_css_class("location-note");
     let note_row = gtk::ListBoxRow::builder().child(&note).activatable(false).selectable(false).build();
-    let change = adw::ButtonRow::builder().title(tr("Choose Another Location…")).build();
-    let reset = adw::ButtonRow::builder().title(tr("Use Default Location")).build();
+    let change = adw::ButtonRow::builder().title(tr("Choose Another Location…")).start_icon_name("folder-open-symbolic").build();
+    let reset = adw::ButtonRow::builder().title(tr("Use Default Location")).start_icon_name("edit-undo-symbolic").build();
     location.add_row(&note_row);
     location.add_row(&change);
     location.add_row(&reset);
