@@ -5,3 +5,6 @@
 *.flatpak
 /.dev
 *.flatpak.sha256
+*.md
+!README.md
+!data/**/*.md
