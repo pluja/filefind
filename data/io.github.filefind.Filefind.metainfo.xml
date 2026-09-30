@@ -10,13 +10,13 @@
   </developer>
   <description>
     <p>
-      Filefind is a fast, simple full-text search for your documents. Add the folders you
-      care about, then type: results appear instantly as you type, even with typos.
+      Filefind searches the text inside your documents. Add the folders you want to search
+      and start typing: results appear as you type, even with typos.
     </p>
     <ul>
       <li>Searches inside PDF, Word, LibreOffice, Excel, PowerPoint, RTF, EPUB, HTML, Markdown and text files</li>
-      <li>Fuzzy matching forgives typos and accents</li>
-      <li>Keeps up with changes to your files automatically</li>
+      <li>Finds words even with typos or missing accents</li>
+      <li>Notices when files are added or changed</li>
       <li>Preview files with every match highlighted</li>
       <li>Results also appear in GNOME and KDE system search</li>
       <li>Everything stays on your computer</li>
@@ -37,7 +37,7 @@
           <li>Search syntax: phrases, exclusions, type:, in: and name:</li>
           <li>Results in GNOME and KDE system search</li>
           <li>Finds other files by name, and matches other forms of a word</li>
-          <li>Faster indexing that stays out of your way</li>
+          <li>Faster indexing that only runs when your computer is idle</li>
         </ul>
       </description>
     </release>

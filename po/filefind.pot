@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: filefind\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 12:27+0300\n"
+"POT-Creation-Date: 2026-09-30 12:51+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -189,7 +189,7 @@ msgid "Only look at file names."
 msgstr ""
 
 #: app/src/help.rs:19
-msgid "Mix them freely."
+msgid "Combine them."
 msgstr ""
 
 #: app/src/help.rs:21 app/src/preferences.rs:62 app/src/window.rs:96
@@ -305,8 +305,8 @@ msgstr ""
 
 #: app/src/preferences.rs:124
 msgid ""
-"Filefind keeps its index in the standard place for app data. Moving it is "
-"rarely useful, for example to use a faster or larger disk."
+"The index is stored with Filefind's other data. Move it only if you want it "
+"on another disk, for example a larger one."
 msgstr ""
 
 #: app/src/preferences.rs:131
@@ -387,13 +387,13 @@ msgstr ""
 msgid "Select a result to see what's inside."
 msgstr ""
 
-#: app/src/preview.rs:326
+#: app/src/preview.rs:329
 msgid "{} matching cell"
 msgid_plural "{} matching cells"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/preview.rs:350
+#: app/src/preview.rs:353
 msgid "Match {current} of {total}"
 msgstr ""
 
@@ -539,8 +539,8 @@ msgstr ""
 
 #: app/src/window.rs:115
 msgid ""
-"Add the folders you want to search. Filefind reads your documents — PDF, "
-"Word, LibreOffice, text and more — so you can find anything by what's inside."
+"Add the folders you want to search. Filefind reads the text in your PDFs, "
+"Word and LibreOffice files, and more, so you can find a file by what it says."
 msgstr ""
 
 #: app/src/window.rs:122
@@ -548,7 +548,7 @@ msgid "Search Your Files"
 msgstr ""
 
 #: app/src/window.rs:124
-msgid "Try type:pdf, in:folder or -word — Search Tips"
+msgid "Search Tips: try type:pdf, in:folder or -word"
 msgstr ""
 
 #: app/src/window.rs:133
@@ -720,7 +720,7 @@ msgid "“{}” is already in your library"
 msgstr ""
 
 #: app/src/window.rs:696
-msgid "“{}” now includes folders that were added before"
+msgid "“{}” replaces the folders inside it"
 msgstr ""
 
 #: app/src/window.rs:704

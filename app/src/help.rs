@@ -16,7 +16,7 @@ pub fn present(parent: &impl IsA<gtk::Widget>, try_example: impl Fn(&str) + 'sta
         ("type:pdf", tr("Only one kind of file: pdf, doc, sheet, slides, text, image, audio, video, or an extension like docx.")),
         ("in:taxes", tr("Only files in folders with this name.")),
         ("name:invoice", tr("Only look at file names.")),
-        ("invoice type:pdf in:2024 -draft", tr("Mix them freely.")),
+        ("invoice type:pdf in:2024 -draft", tr("Combine them.")),
     ];
     let dialog = adw::Dialog::builder().title(tr("Search Tips")).content_width(480).content_height(560).build();
     let try_example = Rc::new(try_example);

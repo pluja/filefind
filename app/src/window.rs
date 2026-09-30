@@ -112,7 +112,7 @@ fn build(app: &adw::Application, backend: &Rc<Backend>) -> Rc<State> {
     let welcome = adw::StatusPage::builder()
         .icon_name(APP_ID)
         .title(tr("Welcome to Filefind"))
-        .description(tr("Add the folders you want to search. Filefind reads your documents — PDF, Word, LibreOffice, text and more — so you can find anything by what's inside."))
+        .description(tr("Add the folders you want to search. Filefind reads the text in your PDFs, Word and LibreOffice files, and more, so you can find a file by what it says."))
         .build();
     let add_button = gtk::Button::builder().label(tr("Add Folder…")).halign(gtk::Align::Center).action_name("win.add-folder").build();
     add_button.add_css_class("pill");
@@ -121,7 +121,7 @@ fn build(app: &adw::Application, backend: &Rc<Backend>) -> Rc<State> {
 
     let ready_page = adw::StatusPage::builder().icon_name("system-search-symbolic").title(tr("Search Your Files")).build();
     let tips_link = gtk::Button::builder()
-        .label(tr("Try type:pdf, in:folder or -word — Search Tips"))
+        .label(tr("Search Tips: try type:pdf, in:folder or -word"))
         .action_name("win.search-tips")
         .halign(gtk::Align::Center)
         .build();
@@ -693,7 +693,7 @@ impl State {
             let message = match outcome {
                 AddOutcome::Added => continue,
                 AddOutcome::AlreadyIncluded => tr("“{}” is already in your library"),
-                AddOutcome::Merged(_) => tr("“{}” now includes folders that were added before"),
+                AddOutcome::Merged(_) => tr("“{}” replaces the folders inside it"),
             };
             self.toast(&message.replace("{}", &name));
         }

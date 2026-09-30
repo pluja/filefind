@@ -121,7 +121,7 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) {
     let advanced = adw::PreferencesGroup::builder().title(tr("Advanced")).build();
     let location = adw::ExpanderRow::builder().title(tr("Index Location")).build();
     let note = gtk::Label::builder()
-        .label(tr("Filefind keeps its index in the standard place for app data. Moving it is rarely useful, for example to use a faster or larger disk."))
+        .label(tr("The index is stored with Filefind's other data. Move it only if you want it on another disk, for example a larger one."))
         .wrap(true)
         .xalign(0.0)
         .build();

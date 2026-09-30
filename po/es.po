@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: filefind\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 12:27+0300\n"
+"POT-Creation-Date: 2026-09-30 12:51+0300\n"
 "PO-Revision-Date: 2026-09-30 12:11+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -193,8 +193,8 @@ msgid "Only look at file names."
 msgstr "Busca solo en los nombres de archivo."
 
 #: app/src/help.rs:19
-msgid "Mix them freely."
-msgstr "Combínalos como quieras."
+msgid "Combine them."
+msgstr "Combínalos."
 
 #: app/src/help.rs:21 app/src/preferences.rs:62 app/src/window.rs:96
 msgid "Search Tips"
@@ -316,12 +316,9 @@ msgstr "Ubicación del índice"
 
 #: app/src/preferences.rs:124
 msgid ""
-"Filefind keeps its index in the standard place for app data. Moving it is "
-"rarely useful, for example to use a faster or larger disk."
-msgstr ""
-"Filefind guarda su índice en la ubicación estándar para datos de "
-"aplicaciones. Moverlo rara vez es útil; por ejemplo, para usar un disco más "
-"rápido o más grande."
+"The index is stored with Filefind's other data. Move it only if you want it "
+"on another disk, for example a larger one."
+msgstr "El índice se guarda con los demás datos de Filefind. Muévelo solo si lo quieres en otro disco, por ejemplo uno más grande."
 
 #: app/src/preferences.rs:131
 msgid "Choose Another Location…"
@@ -403,13 +400,13 @@ msgstr "Vista previa rápida"
 msgid "Select a result to see what's inside."
 msgstr "Selecciona un resultado para ver su contenido."
 
-#: app/src/preview.rs:326
+#: app/src/preview.rs:329
 msgid "{} matching cell"
 msgid_plural "{} matching cells"
 msgstr[0] "{} celda coincidente"
 msgstr[1] "{} celdas coincidentes"
 
-#: app/src/preview.rs:350
+#: app/src/preview.rs:353
 msgid "Match {current} of {total}"
 msgstr "Coincidencia {current} de {total}"
 
@@ -555,20 +552,17 @@ msgstr "Te damos la bienvenida a Filefind"
 
 #: app/src/window.rs:115
 msgid ""
-"Add the folders you want to search. Filefind reads your documents — PDF, "
-"Word, LibreOffice, text and more — so you can find anything by what's inside."
-msgstr ""
-"Añade las carpetas en las que quieres buscar. Filefind lee tus documentos —"
-"PDF, Word, LibreOffice, texto y más— para que encuentres cualquier cosa por "
-"su contenido."
+"Add the folders you want to search. Filefind reads the text in your PDFs, "
+"Word and LibreOffice files, and more, so you can find a file by what it says."
+msgstr "Añade las carpetas en las que quieres buscar. Filefind lee el texto de tus PDF, archivos de Word y LibreOffice, y más, para que encuentres un archivo por lo que dice."
 
 #: app/src/window.rs:122
 msgid "Search Your Files"
 msgstr "Busca en tus archivos"
 
 #: app/src/window.rs:124
-msgid "Try type:pdf, in:folder or -word — Search Tips"
-msgstr "Prueba tipo:pdf, en:carpeta o -palabra — Consejos de búsqueda"
+msgid "Search Tips: try type:pdf, in:folder or -word"
+msgstr "Consejos de búsqueda: prueba tipo:pdf, en:carpeta o -palabra"
 
 #: app/src/window.rs:133
 msgid "No Results Found"
@@ -739,8 +733,8 @@ msgid "“{}” is already in your library"
 msgstr "«{}» ya está en tu biblioteca"
 
 #: app/src/window.rs:696
-msgid "“{}” now includes folders that were added before"
-msgstr "«{}» ahora incluye carpetas que ya estaban añadidas"
+msgid "“{}” replaces the folders inside it"
+msgstr "«{}» sustituye a las carpetas que contiene"
 
 #: app/src/window.rs:704
 msgid "Removed “{}” from your library"
