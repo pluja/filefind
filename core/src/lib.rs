@@ -1,10 +1,15 @@
+pub mod category;
 pub mod engine;
 pub mod extract;
+pub mod helper;
 pub mod library;
 mod msdoc;
+mod priority;
+pub mod query;
 pub mod service;
 
-pub use engine::{Engine, Hit, SearchResults, Segment};
-pub use extract::Extractor;
-pub use library::{AddOutcome, Library};
-pub use service::{Event, Service};
+pub use category::Category;
+pub use engine::{Engine, FailedFile, Filters, Hit, SearchRequest, SearchResults, Segment, Sort};
+pub use extract::{Extractor, Failure};
+pub use library::{AddOutcome, Folder, Library};
+pub use service::{Event, IndexOptions, Progress, Service, Status};

@@ -1,5 +1,5 @@
 .search-bar {
-  padding: 0 12px 10px 12px;
+  padding: 0 12px 8px 12px;
 }
 
 entry.hero-search,
@@ -13,6 +13,56 @@ entry.hero-search,
 .hero-search image {
   opacity: 0.6;
 }
+
+/* Filter chips */
+
+button.chip {
+  border-radius: 999px;
+  padding: 1px 10px;
+  min-height: 24px;
+  font-size: 0.88em;
+  font-weight: 500;
+  background-color: alpha(currentColor, 0.06);
+}
+
+button.chip image {
+  -gtk-icon-size: 14px;
+}
+
+button.chip:hover {
+  background-color: alpha(currentColor, 0.1);
+}
+
+button.chip:checked {
+  background-color: alpha(var(--accent-bg-color), 0.2);
+  color: var(--accent-color);
+}
+
+button.chip-blue image { color: #3584e4; }
+button.chip-red image { color: #e01b24; }
+button.chip-green image { color: #2ec27e; }
+button.chip-orange image { color: #ff7800; }
+button.chip-purple image { color: #9141ac; }
+button.chip-pink image { color: #e5559b; }
+button.chip-teal image { color: #2190a4; }
+button.chip-slate image { color: #77767b; }
+
+button.chip-blue:checked { background-color: alpha(#3584e4, 0.18); color: #1c71d8; }
+button.chip-red:checked { background-color: alpha(#e01b24, 0.16); color: #c01c28; }
+button.chip-green:checked { background-color: alpha(#2ec27e, 0.18); color: #26a269; }
+button.chip-orange:checked { background-color: alpha(#ff7800, 0.18); color: #e66100; }
+button.chip-purple:checked { background-color: alpha(#9141ac, 0.18); color: #813d9c; }
+button.chip-pink:checked { background-color: alpha(#e5559b, 0.18); color: #c64584; }
+button.chip-teal:checked { background-color: alpha(#2190a4, 0.18); color: #1a7a8c; }
+button.chip-slate:checked { background-color: alpha(#77767b, 0.2); }
+
+button.filter-menu {
+  font-size: 0.88em;
+  padding: 1px 8px;
+  min-height: 24px;
+}
+
+/* Results */
 
 .results-count {
   font-size: 0.85em;
@@ -69,6 +119,11 @@ list.results > row:selected .result-action {
   opacity: 1;
 }
 
+.tips-link {
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
 .status-bar {
   padding: 6px 12px;
   font-size: 0.9em;
@@ -78,29 +133,160 @@ list.results > row:selected .result-action {
   opacity: 0.7;
 }
 
-.sidebar-path {
+/* Sidebar */
+
+.sidebar-subtitle,
+.sidebar-count {
   font-size: 0.8em;
   opacity: 0.6;
+  font-feature-settings: "tnum";
 }
 
-.sidebar-remove {
-  opacity: 0;
+.sidebar-menu {
   min-width: 24px;
   min-height: 24px;
+  opacity: 0;
   transition: opacity 150ms;
 }
 
-.navigation-sidebar > row:hover .sidebar-remove,
-.sidebar-remove:focus {
+.navigation-sidebar > row:hover .sidebar-menu,
+.navigation-sidebar > row:selected .sidebar-menu,
+.sidebar-menu:checked,
+.sidebar-menu:focus-within {
   opacity: 0.8;
 }
 
-.sidebar-footer {
-  padding: 8px 10px 12px 10px;
+.navigation-sidebar > row.unavailable {
+  opacity: 0.55;
 }
 
-.sidebar-status {
+.folder-popover {
+  padding: 6px;
+  min-width: 240px;
+}
+
+.folder-popover button {
+  font-weight: normal;
+}
+
+.sidebar-footer {
+  padding: 10px 12px 12px 12px;
+}
+
+.status-view {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: alpha(currentColor, 0.04);
+}
+
+.status-title {
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.status-detail {
   font-size: 0.8em;
-  opacity: 0.55;
+  opacity: 0.6;
   font-feature-settings: "tnum";
+}
+
+.status-percent {
+  font-size: 0.8em;
+  font-weight: 600;
+  opacity: 0.6;
+  font-feature-settings: "tnum";
+}
+
+/* A small filled circle with a white check. */
+.status-ok {
+  color: white;
+  background-color: #2ec27e;
+  border-radius: 999px;
+  padding: 4px;
+  -gtk-icon-size: 12px;
+}
+
+.status-warning {
+  color: #e5a50a;
+}
+
+.status-progress trough,
+.status-progress progress {
+  min-height: 4px;
+  border-radius: 999px;
+}
+
+button.status-failures {
+  font-size: 0.8em;
+  font-weight: normal;
+  padding: 2px 6px;
+  min-height: 0;
+  color: #c64600;
+}
+
+/* Preview */
+
+.preview-header {
+  padding: 12px 16px 14px 16px;
+}
+
+.preview-matches {
+  padding: 4px 8px 4px 16px;
+  background-color: alpha(#ffc233, 0.12);
+}
+
+.preview-text {
+  font-size: 0.95em;
+  background: none;
+}
+
+.preview-picture {
+  margin: 12px;
+}
+
+/* Settings */
+
+.location-note {
+  padding: 12px;
+}
+
+.failures {
+  margin: 12px;
+}
+
+.resize-handle {
+  background: transparent;
+}
+
+.resize-handle:hover {
+  background: alpha(var(--accent-bg-color), 0.35);
+}
+
+.match-badge {
+  font-size: 0.75em;
+  font-weight: 700;
+  padding: 0 7px;
+  min-height: 18px;
+  border-radius: 999px;
+  color: var(--accent-color);
+  background-color: alpha(var(--accent-bg-color), 0.16);
+  font-feature-settings: "tnum";
+}
+
+.preview-table {
+  margin: 12px;
+}
+
+.preview-table label {
+  padding: 4px 10px;
+  border-bottom: 1px solid alpha(currentColor, 0.08);
+}
+
+.preview-table label.header {
+  font-weight: 700;
+  background-color: alpha(currentColor, 0.05);
+}
+
+.preview-table label.match {
+  background-color: alpha(#ffc233, 0.35);
 }

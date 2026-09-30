@@ -17,6 +17,9 @@ struct Translations {
 
 static TRANSLATIONS: OnceLock<Translations> = OnceLock::new();
 
+/// Languages the interface is translated into, named in their own language.
+pub const LANGUAGES: [(&str, &str); 2] = [("en", "English"), ("es", "Español")];
+
 fn locale_dirs() -> Vec<PathBuf> {
     let mut dirs = Vec::new();
     if let Some(dir) = std::env::var_os("FILEFIND_LOCALEDIR") {
@@ -30,11 +33,22 @@ fn locale_dirs() -> Vec<PathBuf> {
     dirs
 }
 
-fn load() -> Translations {
+/// Chooses the interface language: `language` if given, otherwise the system's.
+/// Must run before the first translated string is used; untranslated languages fall back
+/// to English.
+pub fn init(language: Option<&str>) {
+    let candidates: Vec<String> = match language {
+        Some(code) => vec![code.to_owned()],
+        None => glib::language_names().iter().map(|n| n.to_string()).collect(),
+    };
+    let _ = TRANSLATIONS.set(load(&candidates));
+}
+
+fn load(candidates: &[String]) -> Translations {
     let dirs = locale_dirs();
-    for name in glib::language_names() {
+    for name in candidates {
         let name = name.as_str();
-        if name == "C" || name == "POSIX" {
+        if matches!(name, "C" | "POSIX" | "en") || name.starts_with("en_") {
             break;
         }
         for dir in &dirs {
@@ -54,7 +68,7 @@ fn load() -> Translations {
 }
 
 fn translations() -> &'static Translations {
-    TRANSLATIONS.get_or_init(load)
+    TRANSLATIONS.get_or_init(|| load(&glib::language_names().iter().map(|n| n.to_string()).collect::<Vec<_>>()))
 }
 
 /// Translates a message.
