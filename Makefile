@@ -98,7 +98,7 @@ HEADLESS := $(if $(shell command -v kwin_wayland),filefind-headless)
 screenshot: locale ## Render the demo window to target/demo/screenshot.png (QUERY=..., PREVIEW=1, SETTINGS=library, DEV_LANG=es)
 	@$(MAKE) --no-print-directory $(DEMO_READY)
 	$(call SDK_RUN,,cargo) build -p filefind
-	$(if $(HEADLESS),@test -S $(XDG_RUNTIME_DIR)/$(HEADLESS) || { kwin_wayland --virtual --no-lockscreen --width 1100 --height 720 --socket $(HEADLESS) >/dev/null 2>&1 & sleep 2; })
+	$(if $(HEADLESS),@test -S $(XDG_RUNTIME_DIR)/$(HEADLESS) || { kwin_wayland --virtual --no-lockscreen --width 1440 --height 900 --socket $(HEADLESS) >/dev/null 2>&1 & sleep 2; })
 	$(if $(HEADLESS),WAYLAND_DISPLAY=$(HEADLESS)) $(call SDK_RUN,--env=XDG_DATA_HOME=$(DEMO_HOME)/data --env=XDG_CONFIG_HOME=$(DEMO_HOME)/config \
 		--env=FILEFIND_SNAPSHOT=$(DEMO_HOME)/screenshot.png --env=FILEFIND_QUERY="$(QUERY)" \
 		$(if $(PREVIEW),--env=FILEFIND_PREVIEW=1) $(if $(SETTINGS),--env=FILEFIND_SETTINGS_PAGE=$(SETTINGS)),$(CURDIR)/target/sdk/debug/filefind)
