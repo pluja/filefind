@@ -300,8 +300,13 @@ button.status-failures {
 }
 
 .sidebar-excluded {
+  font-size: 0.8em;
   opacity: 0.6;
-  -gtk-icon-size: 14px;
+  font-feature-settings: "tnum";
+}
+
+.sidebar-excluded image {
+  -gtk-icon-size: 12px;
 }
 
 .folder-popover button.menu-item {

@@ -155,18 +155,21 @@ impl Sidebar {
         menu.add_css_class("circular");
         menu.add_css_class("sidebar-menu");
 
-        // A crossed-out eye tells that some subfolders are left out; the tooltip says which.
-        let counts = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-        if !excluded.is_empty() {
+        // Excluded subfolders are part of what the folder covers, so they're noted next to
+        // "Includes subfolders" (a crossed-out eye and how many), not next to the file count.
+        let subtitle_line = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+        subtitle_line.append(&subtitle_label(&subtitle));
+        if !excluded.is_empty() && available {
             let n = excluded.len() as u64;
-            let hidden = gtk::Image::from_icon_name("view-conceal-symbolic");
-            hidden.add_css_class("sidebar-excluded");
-            hidden.set_tooltip_text(Some(&ntr("{} excluded", "{} excluded", n).replace("{}", &n.to_string())));
-            counts.append(&hidden);
+            let note = gtk::Box::new(gtk::Orientation::Horizontal, 3);
+            note.add_css_class("sidebar-excluded");
+            note.set_tooltip_text(Some(&ntr("{} excluded", "{} excluded", n).replace("{}", &n.to_string())));
+            note.append(&gtk::Image::from_icon_name("view-conceal-symbolic"));
+            note.append(&gtk::Label::new(Some(&n.to_string())));
+            subtitle_line.append(&note);
         }
-        counts.append(&count_label);
         let icon = if available { "folder-symbolic" } else { "folder-remote-symbolic" };
-        let row = sidebar_row(icon, &display_name(&folder.path), Some(&subtitle), &counts, Some(&menu));
+        let row = sidebar_row(icon, &display_name(&folder.path), Some(subtitle_line.upcast()), &count_label, Some(&menu));
         let mut tooltip = display_path(&folder.path);
         if !excluded.is_empty() {
             tooltip.push_str(&format!("\n\n{}", tr("Excluded:")));
@@ -293,6 +296,12 @@ fn relative(folder: &Folder, path: &Path) -> String {
     path.strip_prefix(&folder.path).map(|r| r.display().to_string()).unwrap_or_else(|_| display_path(path))
 }
 
+fn subtitle_label(text: &str) -> gtk::Label {
+    let label = gtk::Label::builder().label(text).xalign(0.0).ellipsize(pango::EllipsizeMode::End).build();
+    label.add_css_class("sidebar-subtitle");
+    label
+}
+
 /// A flat, left-aligned button with an icon, like an item in a menu.
 fn menu_item(icon: &str, label: &str) -> gtk::Button {
     let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
@@ -307,8 +316,8 @@ fn menu_item(icon: &str, label: &str) -> gtk::Button {
 fn sidebar_row(
     icon: &str,
     title: &str,
-    subtitle: Option<&str>,
-    count: &impl IsA<gtk::Widget>,
+    subtitle: Option<gtk::Widget>,
+    count: &gtk::Label,
     suffix: Option<&gtk::MenuButton>,
 ) -> gtk::ListBoxRow {
     let title_label = gtk::Label::builder().label(title).xalign(0.0).ellipsize(pango::EllipsizeMode::End).build();
@@ -317,9 +326,7 @@ fn sidebar_row(
     text.set_valign(gtk::Align::Center);
     text.append(&title_label);
     if let Some(subtitle) = subtitle {
-        let label = gtk::Label::builder().label(subtitle).xalign(0.0).ellipsize(pango::EllipsizeMode::End).build();
-        label.add_css_class("sidebar-subtitle");
-        text.append(&label);
+        text.append(&subtitle);
     }
     let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
     content.append(&gtk::Image::from_icon_name(icon));
