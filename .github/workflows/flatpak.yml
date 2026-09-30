@@ -1,0 +1,114 @@
+name: Flatpak
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Core tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Update Rust
+        run: rustup update stable && rustup default stable
+      - name: Test
+        run: cargo test --locked -p filefind-core
+
+  flatpak:
+    name: Build Flatpak
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build
+        uses: flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3 # v6.8
+        with:
+          manifest-path: io.github.filefind.Filefind.yml
+          bundle: filefind.flatpak
+          cache-key: flatpak-builder-${{ github.sha }}
+          upload-artifact: false
+      - name: Checksum
+        run: sha256sum filefind.flatpak > filefind.flatpak.sha256
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: filefind-flatpak
+          path: |
+            filefind.flatpak
+            filefind.flatpak.sha256
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, flatpak]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release
+      id-token: write # sign the provenance attestation
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check the tag matches the app version
+        run: |
+          version="v$(sed -n 's/^version = "\(.*\)"/\1/p' app/Cargo.toml | head -1)"
+          if [ "$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match the version in app/Cargo.toml ($version)"
+            exit 1
+          fi
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: filefind-flatpak
+      - name: Name the bundle after the release
+        id: bundle
+        run: |
+          name="filefind-${GITHUB_REF_NAME}-x86_64.flatpak"
+          mv filefind.flatpak "$name"
+          sha256sum "$name" > "$name.sha256"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ steps.bundle.outputs.name }}
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.bundle.outputs.name }}
+        run: |
+          sha=$(cut -d' ' -f1 "$BUNDLE.sha256")
+          cat > notes.md <<NOTES
+          ## Install
+
+          \`\`\`sh
+          flatpak install --user $BUNDLE
+          \`\`\`
+
+          The GNOME runtime is installed from Flathub if it isn't already.
+
+          ## Verify
+
+          SHA-256: \`$sha\`
+
+          \`\`\`sh
+          sha256sum -c $BUNDLE.sha256
+          \`\`\`
+
+          The bundle also has a signed build provenance attestation, proving it was built
+          by this repository's workflow from this tag. It is listed under
+          $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/attestations, and can be checked with the
+          GitHub CLI: \`gh attestation verify $BUNDLE --repo $GITHUB_REPOSITORY\`.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" "$BUNDLE" "$BUNDLE.sha256" \
+            --title "Filefind ${GITHUB_REF_NAME#v}" --notes-file notes.md --verify-tag

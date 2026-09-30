@@ -4,3 +4,4 @@
 /repo
 *.flatpak
 /.dev
+*.flatpak.sha256

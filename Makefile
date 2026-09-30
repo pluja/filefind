@@ -85,7 +85,8 @@ flatpak: ## Build the Flatpak and install it for the current user
 	flatpak run org.flatpak.Builder --user --force-clean --repo=repo --install build-dir $(MANIFEST)
 
 bundle: flatpak ## Create filefind.flatpak, a single file you can share and install
-	flatpak build-bundle repo filefind.flatpak $(APP_ID)
+	flatpak build-bundle --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo repo filefind.flatpak $(APP_ID)
+	sha256sum filefind.flatpak > filefind.flatpak.sha256
 	@echo "Install with: flatpak install --user filefind.flatpak"
 
 cargo-sources: ## Regenerate offline Cargo sources for the Flatpak (after changing dependencies)
@@ -128,4 +129,4 @@ uninstall: ## Remove the installed Flatpak
 	flatpak uninstall --user -y $(APP_ID)
 
 clean: ## Remove build output (keeps .dev data)
-	rm -rf target build-dir repo .flatpak-builder filefind.flatpak
+	rm -rf target build-dir repo .flatpak-builder filefind.flatpak filefind.flatpak.sha256

@@ -91,15 +91,41 @@ Results can also be dragged into other apps, and right-clicked for more actions.
 
 ## Install
 
-Filefind is distributed as a Flatpak. To build and install it from source:
+Download `filefind-<version>-x86_64.flatpak` and its `.sha256` file from the
+[latest release](../../releases/latest), check the download, and install it:
+
+```sh
+sha256sum -c filefind-*.flatpak.sha256
+flatpak install --user filefind-*.flatpak
+```
+
+The GNOME runtime it needs is installed from Flathub if it isn't there already. Each
+release also has a signed [build provenance attestation](../../attestations) showing it was
+built by this repository's workflow from the release tag.
+
+### From source
+
 
 ```sh
 make setup     # once: the GNOME SDK, the Rust extension and flatpak-builder
 make flatpak   # build and install for your user
 ```
 
-`make bundle` produces `filefind.flatpak`, a single file you can copy to another
-computer and install with `flatpak install --user filefind.flatpak`.
+`make bundle` produces `filefind.flatpak` and its checksum, a single file you can copy to
+another computer and install with `flatpak install --user filefind.flatpak`.
+
+### Publishing a release
+
+The [Flatpak workflow](.github/workflows/flatpak.yml) tests and builds every push and pull
+request; the bundle is attached to each run. To publish, bump the version in
+`app/Cargo.toml` (and the release notes in the metainfo), then push a matching tag:
+
+```sh
+git tag v0.2.0 && git push origin v0.2.0
+```
+
+The workflow checks the tag matches the version, then publishes the bundle, its SHA-256
+checksum and a signed provenance attestation as a GitHub release.
 
 ### Permissions
 
