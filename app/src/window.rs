@@ -261,7 +261,8 @@ fn build(app: &adw::Application, backend: &Rc<Backend>) -> Rc<State> {
     let drop = gtk::DropTarget::new(gdk::FileList::static_type(), gdk::DragAction::COPY);
     drop.connect_drop(glib::clone!(#[weak] state, #[upgrade_or] false, move |_, value, _, _| {
         let Ok(files) = value.get::<gdk::FileList>() else { return false };
-        let folders: Vec<PathBuf> = files.files().iter().filter_map(|f| f.path()).filter(|p| p.is_dir()).collect();
+        let folders: Vec<PathBuf> =
+            files.files().iter().filter_map(|f| f.path()).map(|p| crate::portal::host_path(&p)).filter(|p| p.is_dir()).collect();
         if folders.is_empty() {
             state.toast(&tr("Drop folders here to add them to your library"));
             return false;
@@ -687,7 +688,7 @@ impl State {
         let state = self.clone();
         dialog.select_multiple_folders(Some(&self.window), gio::Cancellable::NONE, move |res| {
             if let Ok(files) = res {
-                let folders = files.iter::<gio::File>().filter_map(|f| f.ok()?.path()).collect();
+                let folders = files.iter::<gio::File>().filter_map(|f| f.ok()?.path()).map(|p| crate::portal::host_path(&p)).collect();
                 state.add_folders(folders);
             }
         });

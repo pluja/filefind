@@ -4,6 +4,7 @@ mod help;
 mod i18n;
 mod launch;
 mod preferences;
+mod portal;
 mod preview;
 mod providers;
 mod render;

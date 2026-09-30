@@ -267,7 +267,7 @@ pub fn choose_excluded_folder(backend: &Rc<Backend>, parent: Option<&gtk::Window
     }
     let backend = backend.clone();
     chooser.select_folder(parent, gio::Cancellable::NONE, move |res| {
-        let Some(path) = res.ok().and_then(|f| f.path()) else { return };
+        let Some(path) = res.ok().and_then(|f| f.path()).map(|p| crate::portal::host_path(&p)) else { return };
         backend.update_settings(|s| {
             if !s.excluded_folders.contains(&path) {
                 s.excluded_folders.push(path);

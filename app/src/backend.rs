@@ -81,6 +81,7 @@ impl Backend {
             listeners: RefCell::new(Vec::new()),
             next_listener: Cell::new(0),
         });
+        backend.resolve_portal_paths();
         backend.open_engine();
 
         let weak = Rc::downgrade(&backend);
@@ -94,6 +95,30 @@ impl Backend {
             backend.hold_for_background(true);
         }
         backend
+    }
+
+    /// Earlier versions stored document portal aliases for chosen folders; use real paths.
+    fn resolve_portal_paths(&self) {
+        // Compared as text: paths that differ only by a trailing slash are "equal" as paths.
+        let text = |paths: &mut dyn Iterator<Item = &PathBuf>| paths.map(|p| p.as_os_str().to_owned()).collect::<Vec<_>>();
+        let mut library = self.library.borrow_mut();
+        let before = text(&mut library.folders.iter().map(|f| &f.path));
+        for folder in &mut library.folders {
+            folder.path = crate::portal::host_path(&folder.path);
+        }
+        if text(&mut library.folders.iter().map(|f| &f.path)) != before {
+            if let Err(e) = library.save(&self.config_dir.join("library.json")) {
+                log::error!("saving library: {e}");
+            }
+        }
+        drop(library);
+        let mut settings = self.settings.borrow_mut();
+        let resolved: Vec<PathBuf> = settings.excluded_folders.iter().map(|p| crate::portal::host_path(p)).collect();
+        if text(&mut resolved.iter()) != text(&mut settings.excluded_folders.iter()) {
+            settings.excluded_folders = resolved;
+            drop(settings);
+            self.save_settings();
+        }
     }
 
     fn open_engine(&self) {
