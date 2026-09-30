@@ -1,2 +1,9 @@
-app/src/window.rs
+app/src/backend.rs
+app/src/filters.rs
+app/src/help.rs
+app/src/preferences.rs
+app/src/preview.rs
+app/src/providers.rs
+app/src/results.rs
 app/src/sidebar.rs
+app/src/window.rs
