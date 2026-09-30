@@ -24,7 +24,7 @@ SDK_RUN = flatpak run --share=network --share=ipc --socket=wayland --socket=fall
 	$(1) --command=$(2) $(SDK)
 
 .DEFAULT_GOAL := help
-.PHONY: help dev dev-es demo run build test check fmt locale pot po flatpak bundle \
+.PHONY: help dev dev-es demo demo-reset run build test check fmt locale pot po flatpak bundle \
 	cargo-sources screenshot uninstall clean setup
 
 help: ## Show this help
@@ -40,10 +40,13 @@ dev: locale ## Build a debug version and run it (separate data in .dev/, your fo
 dev-es: ## Like `make dev`, in Spanish
 	$(MAKE) dev DEV_LANG=es
 
-demo: locale ## Run the debug build against a small demo library
-	@$(MAKE) --no-print-directory target/demo/.ready
+demo: locale ## Run the app on a demo library with sample files of every kind (kept in target/demo)
+	@$(MAKE) --no-print-directory $(DEMO_READY)
 	$(call SDK_RUN,,cargo) build -p filefind
 	$(call SDK_RUN,--env=XDG_DATA_HOME=$(DEMO_HOME)/data --env=XDG_CONFIG_HOME=$(DEMO_HOME)/config,$(CURDIR)/target/sdk/debug/filefind)
+
+demo-reset: ## Start the demo from scratch (sample files, index and settings)
+	rm -rf $(DEMO_HOME)
 
 run: ## Run the installed Flatpak
 	flatpak run $(APP_ID)
@@ -93,7 +96,7 @@ cargo-sources: ## Regenerate offline Cargo sources for the Flatpak (after changi
 HEADLESS := $(if $(shell command -v kwin_wayland),filefind-headless)
 
 screenshot: locale ## Render the demo window to target/demo/screenshot.png (QUERY=..., PREVIEW=1, DEV_LANG=es)
-	@$(MAKE) --no-print-directory target/demo/.ready
+	@$(MAKE) --no-print-directory $(DEMO_READY)
 	$(call SDK_RUN,,cargo) build -p filefind
 	$(if $(HEADLESS),@test -S $(XDG_RUNTIME_DIR)/$(HEADLESS) || { kwin_wayland --virtual --no-lockscreen --width 1100 --height 720 --socket $(HEADLESS) >/dev/null 2>&1 & sleep 2; })
 	$(if $(HEADLESS),WAYLAND_DISPLAY=$(HEADLESS)) $(call SDK_RUN,--env=XDG_DATA_HOME=$(DEMO_HOME)/data --env=XDG_CONFIG_HOME=$(DEMO_HOME)/config \
@@ -101,21 +104,24 @@ screenshot: locale ## Render the demo window to target/demo/screenshot.png (QUER
 		$(if $(PREVIEW),--env=FILEFIND_PREVIEW=1),$(CURDIR)/target/sdk/debug/filefind)
 	@echo "Saved $(DEMO_HOME)/screenshot.png"
 
-target/demo/.ready:
-	mkdir -p $(DEMO_HOME)/Documents/Work $(DEMO_HOME)/Documents/Taxes $(DEMO_HOME)/Documents/Recipes $(DEMO_HOME)/config/filefind
+# The demo library: the samples in data/demo plus one test fixture of each binary format.
+# Rebuilt whenever a sample changes; the app notices and reindexes on its own.
+DEMO_SOURCES := $(shell find data/demo -type f) $(wildcard core/tests/fixtures/*)
+DEMO_READY := $(DEMO_HOME)/.ready
+
+$(DEMO_READY): $(DEMO_SOURCES)
+	rm -rf $(DEMO_HOME)/Documents
+	mkdir -p $(DEMO_HOME)/Documents/Taxes $(DEMO_HOME)/Documents/Pictures $(DEMO_HOME)/config/filefind
+	cp -r data/demo/. $(DEMO_HOME)/Documents/
 	cp core/tests/fixtures/sample.pdf "$(DEMO_HOME)/Documents/Work/Quarterly Report.pdf"
 	cp core/tests/fixtures/sample.docx "$(DEMO_HOME)/Documents/Work/Board Minutes.docx"
 	cp core/tests/fixtures/sample.odt "$(DEMO_HOME)/Documents/Work/Budget Draft.odt"
+	cp core/tests/fixtures/sample.rtf "$(DEMO_HOME)/Documents/Work/Meeting Notes.rtf"
 	cp core/tests/fixtures/sheet.xlsx "$(DEMO_HOME)/Documents/Taxes/Expenses 2025.xlsx"
+	cp core/tests/fixtures/sheet.ods "$(DEMO_HOME)/Documents/Taxes/Trips.ods"
 	cp core/tests/fixtures/sample.doc "$(DEMO_HOME)/Documents/Taxes/Old Letter.doc"
-	printf "# Grandma's marmalade\n\nA **bitter** orange marmalade, best made in *January*.\n\n## Ingredients\n\n- 1kg Seville oranges\n- 2kg sugar\n- 1 lemon\n\n## Method\n\n1. Simmer the oranges for two hours.\n2. Add the sugar and boil until set.\n\n> Test a spoonful on a cold plate: marmalade that wrinkles is ready.\n" > "$(DEMO_HOME)/Documents/Recipes/Marmalade.md"
-	printf "date,shop,item,amount\n2025-01-12,Market,Seville oranges,6.40\n2025-01-12,Market,Sugar,3.10\n2025-01-13,Corner shop,\"Lemons, organic\",1.20\n2025-01-20,Market,Jars for marmalade,12.00\n" > "$(DEMO_HOME)/Documents/Recipes/shopping.csv"
-	printf "Photosynthesis notes\n\nLight reactions happen in the thylakoid membrane. The Calvin cycle fixes carbon in the stroma.\n" > "$(DEMO_HOME)/Documents/Work/biology notes.txt"
-	mkdir -p $(DEMO_HOME)/Documents/Code $(DEMO_HOME)/Documents/Pictures
-	cp data/demo/jars.py "$(DEMO_HOME)/Documents/Code/"
-	cp data/demo/club.html "$(DEMO_HOME)/Documents/Recipes/"
 	cp data/icons/$(APP_ID).svg "$(DEMO_HOME)/Documents/Pictures/Filefind logo.svg"
-	echo '{"folders":["$(DEMO_HOME)/Documents"]}' > $(DEMO_HOME)/config/filefind/library.json
+	test -f $(DEMO_HOME)/config/filefind/library.json || echo '{"folders":["$(DEMO_HOME)/Documents"]}' > $(DEMO_HOME)/config/filefind/library.json
 	touch $@
 
 uninstall: ## Remove the installed Flatpak
