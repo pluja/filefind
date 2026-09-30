@@ -17,6 +17,8 @@
       <li>Searches inside PDF, Word, LibreOffice, Excel, PowerPoint, RTF, EPUB, HTML, Markdown and text files</li>
       <li>Fuzzy matching forgives typos and accents</li>
       <li>Keeps up with changes to your files automatically</li>
+      <li>Preview files with every match highlighted</li>
+      <li>Results also appear in GNOME and KDE system search</li>
       <li>Everything stays on your computer</li>
     </ul>
   </description>
@@ -27,6 +29,18 @@
     <control>pointing</control>
   </supports>
   <releases>
+    <release version="0.2.0" date="2026-09-30">
+      <description>
+        <ul>
+          <li>Filter by file type and date, and sort results</li>
+          <li>Quick preview with highlighted matches, tables and formatted Markdown</li>
+          <li>Search syntax: phrases, exclusions, type:, in: and name:</li>
+          <li>Results in GNOME and KDE system search</li>
+          <li>Finds other files by name, and matches other forms of a word</li>
+          <li>Faster indexing that stays out of your way</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-09-30">
       <description><p>First release.</p></description>
     </release>

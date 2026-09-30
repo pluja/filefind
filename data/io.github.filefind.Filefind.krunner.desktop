@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Service
+Name=Filefind
+Comment=Search inside your documents
+Icon=io.github.filefind.Filefind
+X-KDE-ServiceTypes=Plasma/Runner
+X-KDE-PluginInfo-Name=io.github.filefind.Filefind
+X-KDE-PluginInfo-Version=0.2.0
+X-KDE-PluginInfo-License=GPL-3.0-or-later
+X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-API=DBus
+X-Plasma-DBusRunner-Service=io.github.filefind.Filefind
+X-Plasma-DBusRunner-Path=/runner
+X-Plasma-Request-Actions-Once=true
+X-Plasma-Runner-Min-Letter-Count=3
