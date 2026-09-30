@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="data/icons/io.github.filefind.Filefind.svg" width="96" alt="">
+<img src="data/icons/io.github.pluja.Filefind.svg" width="96" alt="">
 
 # Filefind
 
@@ -120,7 +120,7 @@ another computer and install with `flatpak install --user filefind.flatpak`.
 
 The [Flatpak workflow](.github/workflows/flatpak.yml) tests and builds every push and pull
 request; the bundle is attached to each run. To publish, bump the version in
-`app/Cargo.toml` and describe the release in `data/io.github.filefind.Filefind.metainfo.xml`
+`app/Cargo.toml` and describe the release in `data/io.github.pluja.Filefind.metainfo.xml`
 (the workflow uses these notes for the GitHub release too), then push a matching tag:
 
 ```sh
@@ -134,7 +134,7 @@ checksum and a signed provenance attestation as a GitHub release.
 
 Filefind can read (not change) your home folder and removable drives under `/media`,
 `/run/media` and `/mnt`. It has no network access. Its index is kept with its other data
-in `~/.var/app/io.github.filefind.Filefind/`.
+in `~/.var/app/io.github.pluja.Filefind/`.
 
 ## Development
 

@@ -3,7 +3,7 @@
 # The app is built inside the GNOME SDK (Flatpak), so the host needs no GTK
 # development packages: only flatpak, and cargo for the core library tests.
 
-APP_ID     := io.github.filefind.Filefind
+APP_ID     := io.github.pluja.Filefind
 MANIFEST   := $(APP_ID).yml
 SDK        := org.gnome.Sdk//50
 LINGUAS    := $(shell cat po/LINGUAS)

@@ -22,7 +22,7 @@ use gtk::{gdk, gio, glib};
 
 use crate::backend::Backend;
 
-pub const APP_ID: &str = "io.github.filefind.Filefind";
+pub const APP_ID: &str = "io.github.pluja.Filefind";
 pub const APP_NAME: &str = "Filefind";
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// Started at login to index without opening a window.

@@ -1,3 +1,3 @@
 [D-BUS Service]
-Name=io.github.filefind.Filefind
+Name=io.github.pluja.Filefind
 Exec=/app/bin/filefind --gapplication-service

@@ -1,4 +1,4 @@
-id: io.github.filefind.Filefind
+id: io.github.pluja.Filefind
 runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
@@ -28,15 +28,15 @@ modules:
       - cargo build --release --locked --offline -p filefind
       - install -Dm755 target/release/filefind -t /app/bin
       - for lang in $(cat po/LINGUAS); do install -d /app/share/locale/$lang/LC_MESSAGES && msgfmt --check -o /app/share/locale/$lang/LC_MESSAGES/filefind.mo po/$lang.po; done
-      - install -Dm644 data/io.github.filefind.Filefind.desktop -t /app/share/applications
-      - install -Dm644 data/io.github.filefind.Filefind.metainfo.xml -t /app/share/metainfo
-      - install -Dm644 data/icons/io.github.filefind.Filefind.svg -t /app/share/icons/hicolor/scalable/apps
-      - install -Dm644 data/icons/io.github.filefind.Filefind-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps
+      - install -Dm644 data/io.github.pluja.Filefind.desktop -t /app/share/applications
+      - install -Dm644 data/io.github.pluja.Filefind.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 data/icons/io.github.pluja.Filefind.svg -t /app/share/icons/hicolor/scalable/apps
+      - install -Dm644 data/icons/io.github.pluja.Filefind-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps
       - install -Dm644 data/icons/filefind-pdf-symbolic.svg -t /app/share/icons/hicolor/symbolic/apps
       # System search: GNOME Shell and KRunner start the app over D-Bus to answer queries.
-      - install -Dm644 data/io.github.filefind.Filefind.service -t /app/share/dbus-1/services
-      - install -Dm644 data/io.github.filefind.Filefind.search-provider.ini -t /app/share/gnome-shell/search-providers
-      - install -Dm644 data/io.github.filefind.Filefind.krunner.desktop /app/share/krunner/dbusplugins/io.github.filefind.Filefind.desktop
+      - install -Dm644 data/io.github.pluja.Filefind.service -t /app/share/dbus-1/services
+      - install -Dm644 data/io.github.pluja.Filefind.search-provider.ini -t /app/share/gnome-shell/search-providers
+      - install -Dm644 data/io.github.pluja.Filefind.krunner.desktop /app/share/krunner/dbusplugins/io.github.pluja.Filefind.desktop
     sources:
       - type: dir
         path: .

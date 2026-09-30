@@ -14,7 +14,7 @@ use crate::backend::Backend;
 use crate::i18n::tr;
 use crate::window::display_path;
 
-pub const GNOME_PATH: &str = "/io/github/filefind/Filefind/SearchProvider";
+pub const GNOME_PATH: &str = "/io/github/pluja/Filefind/SearchProvider";
 pub const KRUNNER_PATH: &str = "/runner";
 const RESULTS: usize = 10;
 

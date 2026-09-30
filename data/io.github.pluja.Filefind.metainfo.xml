@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.filefind.Filefind</id>
+  <id>io.github.pluja.Filefind</id>
   <name>Filefind</name>
   <summary>Find any file by what's inside it</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
-  <developer id="io.github.filefind">
+  <developer id="io.github.pluja">
     <name>The Filefind Contributors</name>
   </developer>
   <description>
@@ -22,7 +22,7 @@
       <li>Everything stays on your computer</li>
     </ul>
   </description>
-  <launchable type="desktop-id">io.github.filefind.Filefind.desktop</launchable>
+  <launchable type="desktop-id">io.github.pluja.Filefind.desktop</launchable>
   <url type="homepage">https://github.com/pluja/filefind</url>
   <url type="bugtracker">https://github.com/pluja/filefind/issues</url>
   <url type="vcs-browser">https://github.com/pluja/filefind</url>
