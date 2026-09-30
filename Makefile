@@ -51,8 +51,9 @@ run: ## Run the installed Flatpak
 build: ## Build an optimized binary (target/sdk/release/filefind)
 	$(call SDK_RUN,,cargo) build --release -p filefind
 
-test: ## Run the core test suite (extraction, indexing, search)
+test: ## Run all tests (core on the host, the app inside the SDK)
 	cargo test -p filefind-core
+	$(call SDK_RUN,,cargo) test -p filefind
 
 check: ## Lint everything with clippy
 	$(call SDK_RUN,,cargo) clippy --workspace --all-targets
@@ -72,7 +73,10 @@ pot: ## Extract translatable strings into po/filefind.pot
 		--files-from=po/POTFILES -o po/filefind.pot
 
 po: pot ## Update the .po files with new strings
-	for l in $(LINGUAS); do msgmerge --update --backup=none po/$$l.po po/filefind.pot; done
+	for l in $(LINGUAS); do \
+		msgmerge --update --backup=none --no-fuzzy-matching po/$$l.po po/filefind.pot && \
+		msgattrib --no-obsolete -o po/$$l.po po/$$l.po; \
+	done
 
 flatpak: ## Build the Flatpak and install it for the current user
 	flatpak run org.flatpak.Builder --user --force-clean --repo=repo --install build-dir $(MANIFEST)
@@ -85,11 +89,16 @@ cargo-sources: ## Regenerate offline Cargo sources for the Flatpak (after changi
 	uv run --quiet --with aiohttp --with tomlkit python3 build-aux/flatpak-cargo-generator.py \
 		Cargo.lock -o build-aux/cargo-sources.json
 
-screenshot: locale ## Render the demo window to target/demo/screenshot.png (QUERY=..., DEV_LANG=es)
+# Screenshots run in a headless KWin when available, so they never take over the desktop.
+HEADLESS := $(if $(shell command -v kwin_wayland),filefind-headless)
+
+screenshot: locale ## Render the demo window to target/demo/screenshot.png (QUERY=..., PREVIEW=1, DEV_LANG=es)
 	@$(MAKE) --no-print-directory target/demo/.ready
 	$(call SDK_RUN,,cargo) build -p filefind
-	$(call SDK_RUN,--env=XDG_DATA_HOME=$(DEMO_HOME)/data --env=XDG_CONFIG_HOME=$(DEMO_HOME)/config \
-		--env=FILEFIND_SNAPSHOT=$(DEMO_HOME)/screenshot.png --env=FILEFIND_QUERY="$(QUERY)",$(CURDIR)/target/sdk/debug/filefind)
+	$(if $(HEADLESS),@test -S $(XDG_RUNTIME_DIR)/$(HEADLESS) || { kwin_wayland --virtual --no-lockscreen --width 1100 --height 720 --socket $(HEADLESS) >/dev/null 2>&1 & sleep 2; })
+	$(if $(HEADLESS),WAYLAND_DISPLAY=$(HEADLESS)) $(call SDK_RUN,--env=XDG_DATA_HOME=$(DEMO_HOME)/data --env=XDG_CONFIG_HOME=$(DEMO_HOME)/config \
+		--env=FILEFIND_SNAPSHOT=$(DEMO_HOME)/screenshot.png --env=FILEFIND_QUERY="$(QUERY)" \
+		$(if $(PREVIEW),--env=FILEFIND_PREVIEW=1),$(CURDIR)/target/sdk/debug/filefind)
 	@echo "Saved $(DEMO_HOME)/screenshot.png"
 
 target/demo/.ready:
@@ -99,8 +108,13 @@ target/demo/.ready:
 	cp core/tests/fixtures/sample.odt "$(DEMO_HOME)/Documents/Work/Budget Draft.odt"
 	cp core/tests/fixtures/sheet.xlsx "$(DEMO_HOME)/Documents/Taxes/Expenses 2025.xlsx"
 	cp core/tests/fixtures/sample.doc "$(DEMO_HOME)/Documents/Taxes/Old Letter.doc"
-	printf "Grandma's marmalade\n\nIngredients: 1kg Seville oranges, 2kg sugar, 1 lemon.\nSimmer the oranges for two hours, then add the sugar and boil until set.\n" > "$(DEMO_HOME)/Documents/Recipes/Marmalade.md"
+	printf "# Grandma's marmalade\n\nA **bitter** orange marmalade, best made in *January*.\n\n## Ingredients\n\n- 1kg Seville oranges\n- 2kg sugar\n- 1 lemon\n\n## Method\n\n1. Simmer the oranges for two hours.\n2. Add the sugar and boil until set.\n\n> Test a spoonful on a cold plate: marmalade that wrinkles is ready.\n" > "$(DEMO_HOME)/Documents/Recipes/Marmalade.md"
+	printf "date,shop,item,amount\n2025-01-12,Market,Seville oranges,6.40\n2025-01-12,Market,Sugar,3.10\n2025-01-13,Corner shop,\"Lemons, organic\",1.20\n2025-01-20,Market,Jars for marmalade,12.00\n" > "$(DEMO_HOME)/Documents/Recipes/shopping.csv"
 	printf "Photosynthesis notes\n\nLight reactions happen in the thylakoid membrane. The Calvin cycle fixes carbon in the stroma.\n" > "$(DEMO_HOME)/Documents/Work/biology notes.txt"
+	mkdir -p $(DEMO_HOME)/Documents/Code $(DEMO_HOME)/Documents/Pictures
+	cp data/demo/jars.py "$(DEMO_HOME)/Documents/Code/"
+	cp data/demo/club.html "$(DEMO_HOME)/Documents/Recipes/"
+	cp data/icons/$(APP_ID).svg "$(DEMO_HOME)/Documents/Pictures/Filefind logo.svg"
 	echo '{"folders":["$(DEMO_HOME)/Documents"]}' > $(DEMO_HOME)/config/filefind/library.json
 	touch $@
 
