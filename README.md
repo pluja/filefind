@@ -9,6 +9,8 @@
 Add the folders you care about and start typing. Filefind reads the text inside your
 documents and shows matches as you type, even with typos.
 
+> This app is coded with AI.
+
 <img src="data/screenshots/search.png" alt="Searching for “marmalade”: results with highlighted snippets and match counts, and a preview of a Markdown recipe">
 
 </div>
