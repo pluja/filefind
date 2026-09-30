@@ -120,7 +120,8 @@ another computer and install with `flatpak install --user filefind.flatpak`.
 
 The [Flatpak workflow](.github/workflows/flatpak.yml) tests and builds every push and pull
 request; the bundle is attached to each run. To publish, bump the version in
-`app/Cargo.toml` (and the release notes in the metainfo), then push a matching tag:
+`app/Cargo.toml` and describe the release in `data/io.github.filefind.Filefind.metainfo.xml`
+(the workflow uses these notes for the GitHub release too), then push a matching tag:
 
 ```sh
 git tag v0.2.0 && git push origin v0.2.0
@@ -169,4 +170,4 @@ run `make po`, and translate `po/<code>.po`.
 
 ## License
 
-GPL-3.0-or-later.
+[GPL-3.0-or-later](LICENSE).

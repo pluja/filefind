@@ -82,13 +82,28 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: ${{ steps.bundle.outputs.name }}
+      - name: Release notes from the metainfo
+        run: |
+          python3 - "${GITHUB_REF_NAME#v}" > changes.md <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          root = ET.parse("data/io.github.filefind.Filefind.metainfo.xml").getroot()
+          release = root.find(f"releases/release[@version='{sys.argv[1]}']")
+          if release is None:
+              sys.exit(f"No release notes for {sys.argv[1]} in the metainfo")
+          for node in release.find("description"):
+              if node.tag == "p":
+                  print(node.text.strip(), end="\n\n")
+              else:
+                  print("\n".join(f"- {li.text.strip()}" for li in node), end="\n\n")
+          PY
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
           BUNDLE: ${{ steps.bundle.outputs.name }}
         run: |
           sha=$(cut -d' ' -f1 "$BUNDLE.sha256")
-          cat > notes.md <<NOTES
+          cp changes.md notes.md
+          cat >> notes.md <<NOTES
           ## Install
 
           \`\`\`sh

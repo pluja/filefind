@@ -23,26 +23,47 @@
     </ul>
   </description>
   <launchable type="desktop-id">io.github.filefind.Filefind.desktop</launchable>
+  <url type="homepage">https://github.com/pluja/filefind</url>
+  <url type="bugtracker">https://github.com/pluja/filefind/issues</url>
+  <url type="vcs-browser">https://github.com/pluja/filefind</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Search results with highlighted matches and a preview</caption>
+      <image>https://raw.githubusercontent.com/pluja/filefind/v0.2.0/data/screenshots/search.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Code with syntax highlighting</caption>
+      <image>https://raw.githubusercontent.com/pluja/filefind/v0.2.0/data/screenshots/code.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Spreadsheets and CSV files as tables</caption>
+      <image>https://raw.githubusercontent.com/pluja/filefind/v0.2.0/data/screenshots/table.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Choose what gets indexed</caption>
+      <image>https://raw.githubusercontent.com/pluja/filefind/v0.2.0/data/screenshots/settings.png</image>
+    </screenshot>
+  </screenshots>
   <content_rating type="oars-1.1"/>
   <supports>
     <control>keyboard</control>
     <control>pointing</control>
   </supports>
   <releases>
-    <release version="0.2.0" date="2026-09-30">
+    <release version="0.2.0" date="2026-10-01">
       <description>
+        <p>First public release.</p>
         <ul>
-          <li>Filter by file type and date, and sort results</li>
-          <li>Quick preview with highlighted matches, tables and formatted Markdown</li>
-          <li>Search syntax: phrases, exclusions, type:, in: and name:</li>
+          <li>Full-text search inside PDF, Word, LibreOffice, Excel, PowerPoint, RTF, EPUB, HTML, Markdown, text and code, tolerant of typos and of other word forms in English and Spanish</li>
+          <li>Photos, music and other files are found by name</li>
+          <li>Filters by type and date, sorting, and a search syntax for phrases, exclusions, type:, in: and name:</li>
+          <li>Quick preview with highlighted matches: code with syntax highlighting, spreadsheets and CSV files as tables, formatted Markdown and web pages</li>
+          <li>Choose which folders to search, with or without subfolders, and exclude folders or name patterns</li>
           <li>Results in GNOME and KDE system search</li>
-          <li>Finds other files by name, and matches other forms of a word</li>
-          <li>Faster indexing that only runs when your computer is idle</li>
+          <li>Indexing follows changes to your files and only runs when your computer is idle</li>
+          <li>English and Spanish</li>
         </ul>
       </description>
-    </release>
-    <release version="0.1.0" date="2026-09-30">
-      <description><p>First release.</p></description>
     </release>
   </releases>
 </component>
