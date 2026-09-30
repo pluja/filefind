@@ -189,10 +189,10 @@ fn searches() {
     assert_eq!(h.names(in_folder).len(), 11);
 
     // Without file names, only documents are indexed.
-    let status = h.set(vec![Folder::new(library.path().to_owned())], IndexOptions { file_names: false, hidden_files: false });
+    let status = h.set(vec![Folder::new(library.path().to_owned())], IndexOptions { file_names: false, ..Default::default() });
     assert_eq!(status.docs, 10);
     // Hidden files on request.
-    let status = h.set(vec![Folder::new(library.path().to_owned())], IndexOptions { file_names: false, hidden_files: true });
+    let status = h.set(vec![Folder::new(library.path().to_owned())], IndexOptions { file_names: false, hidden_files: true, ..Default::default() });
     assert_eq!(status.docs, 11);
 }
 
@@ -272,4 +272,35 @@ fn shutdown_releases_the_index() {
         // Opening a second writer only works once the first is gone.
         service.shutdown();
     }
+}
+
+#[test]
+fn exclusions() {
+    let top = tempfile::tempdir().unwrap();
+    let private = top.path().join("Downloads/private");
+    std::fs::create_dir_all(&private).unwrap();
+    std::fs::write(private.join("diary.txt"), "orchid").unwrap();
+    std::fs::write(top.path().join("Downloads/notes.txt"), "orchid").unwrap();
+    std::fs::write(top.path().join("Downloads/server.log"), "orchid").unwrap();
+
+    let h = Harness::new();
+    let folders = vec![Folder::new(top.path().to_owned())];
+    let excluding = IndexOptions {
+        excluded_folders: vec![private.clone()],
+        excluded_names: vec!["*.LOG".into()],
+        ..Default::default()
+    };
+    assert_eq!(h.set(folders.clone(), excluding.clone()).docs, 1);
+    assert_eq!(h.find("orchid"), ["notes.txt"]);
+
+    // New files in excluded places stay out.
+    std::fs::write(private.join("more.txt"), "orchid").unwrap();
+    std::fs::write(top.path().join("Downloads/other.log"), "orchid").unwrap();
+    std::fs::write(top.path().join("Downloads/fresh.txt"), "orchid").unwrap();
+    h.idle();
+    assert_eq!(h.find("orchid"), ["fresh.txt", "notes.txt"]);
+
+    // Removing the exclusions brings everything in; adding them back takes it out.
+    assert_eq!(h.set(folders.clone(), IndexOptions::default()).docs, 6);
+    assert_eq!(h.set(folders, excluding).docs, 2);
 }

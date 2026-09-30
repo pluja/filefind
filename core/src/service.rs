@@ -20,6 +20,7 @@ use tantivy::{IndexWriter, TantivyDocument};
 
 use crate::engine::{Content, Engine, FileMeta};
 use crate::extract::{self, Extractor, Kind};
+use crate::filter::IndexOptions;
 use crate::library::Folder;
 
 const COMMIT_EVERY: Duration = Duration::from_secs(10);
@@ -28,21 +29,6 @@ const CHANGE_CHUNK: usize = 64;
 const PROGRESS_EVERY: Duration = Duration::from_millis(200);
 const DEBOUNCE: Duration = Duration::from_millis(1500);
 const RESCAN_EVERY: Duration = Duration::from_secs(30 * 60);
-const SKIP_DIRS: &[&str] = &["node_modules", "__pycache__", "site-packages", "lost+found"];
-
-/// What gets indexed besides document contents.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct IndexOptions {
-    /// Also index files that aren't documents (photos, music, archives…) by name.
-    pub file_names: bool,
-    pub hidden_files: bool,
-}
-
-impl Default for IndexOptions {
-    fn default() -> Self {
-        IndexOptions { file_names: true, hidden_files: false }
-    }
-}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Progress {
@@ -338,7 +324,7 @@ impl Worker {
         let (doc_tx, doc_rx) = mpsc::sync_channel::<Built>(2 * self.extraction.pool.current_num_threads());
 
         let roots = self.roots.clone();
-        let options = self.options;
+        let options = self.options.clone();
         let engine = self.engine.clone();
         let extraction = self.extraction.clone();
         let mut done = 0;
@@ -349,7 +335,7 @@ impl Worker {
         let scan = std::thread::scope(|s| {
             let scanner = s.spawn(|| {
                 crate::priority::lower_current_thread();
-                let out = scan(&roots, options, &existing, &cand_tx, &cancel, &scanned, &queued);
+                let out = scan(&roots, &options, &existing, &cand_tx, &cancel, &scanned, &queued);
                 drop(cand_tx);
                 scan_done.store(true, Ordering::Release);
                 out
@@ -468,11 +454,11 @@ impl Worker {
                     let Some(root) = self.roots.iter().position(|f| f.include_subfolders && path.starts_with(&f.path)) else {
                         continue;
                     };
-                    if hidden_or_skipped_below(&self.roots[root].path, &path, self.options) {
+                    if self.options.skips_below(&self.roots[root].path, &path) {
                         continue;
                     }
                     let folder = Folder { path: path.clone(), include_subfolders: true };
-                    walk(&folder, self.options, &mut new_dirs, &mut |p, kind, meta| {
+                    walk(&folder, &self.options, &mut new_dirs, &mut |p, kind, meta| {
                         todo.extend(needs_indexing(p, root, kind, meta, engine.indexed_meta(p)));
                         true
                     });
@@ -480,10 +466,10 @@ impl Worker {
                 Ok(m) if m.is_file() => {
                     let Some(parent) = path.parent() else { continue };
                     let Some(root) = self.roots.iter().position(|f| f.covers_dir(parent)) else { continue };
-                    if hidden_or_skipped_below(&self.roots[root].path, &path, self.options) {
+                    if self.options.skips_below(&self.roots[root].path, &path) {
                         continue;
                     }
-                    if let Some((kind, meta)) = classify(&path, &m, self.options) {
+                    if let Some((kind, meta)) = classify(&path, &m, &self.options) {
                         todo.extend(needs_indexing(&path, root, kind, meta, engine.indexed_meta(&path)));
                     }
                 }
@@ -546,7 +532,7 @@ struct ScanResult {
 /// Walks every library folder, queueing files whose metadata differs from the index.
 fn scan(
     roots: &[Folder],
-    options: IndexOptions,
+    options: &IndexOptions,
     existing: &HashMap<String, FileMeta>,
     queue: &SyncSender<Candidate>,
     cancel: &AtomicBool,
@@ -583,17 +569,8 @@ fn extraction_threads() -> usize {
     cores.min(gib).max(1)
 }
 
-fn is_skipped(name: &std::ffi::OsStr, options: IndexOptions) -> bool {
-    let name = name.to_string_lossy();
-    (!options.hidden_files && name.starts_with('.')) || SKIP_DIRS.contains(&name.as_ref())
-}
-
-fn hidden_or_skipped_below(root: &Path, path: &Path, options: IndexOptions) -> bool {
-    path.strip_prefix(root).is_ok_and(|rel| rel.components().any(|c| is_skipped(c.as_os_str(), options)))
-}
-
 /// Decides whether and how a file is indexed.
-fn classify(path: &Path, m: &std::fs::Metadata, options: IndexOptions) -> Option<(Option<Kind>, FileMeta)> {
+fn classify(path: &Path, m: &std::fs::Metadata, options: &IndexOptions) -> Option<(Option<Kind>, FileMeta)> {
     let mtime = m.modified().ok()?.duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
     let meta = FileMeta { mtime, size: m.len() };
     match extract::kind_for(path) {
@@ -609,16 +586,17 @@ fn classify(path: &Path, m: &std::fs::Metadata, options: IndexOptions) -> Option
 /// `found`, which returns false to stop the walk.
 fn walk(
     folder: &Folder,
-    options: IndexOptions,
+    options: &IndexOptions,
     dirs: &mut HashSet<PathBuf>,
     found: &mut dyn FnMut(&Path, Option<Kind>, FileMeta) -> bool,
 ) {
     let depth = if folder.include_subfolders { usize::MAX } else { 1 };
     let walker = walkdir::WalkDir::new(&folder.path).follow_links(false).max_depth(depth).into_iter().filter_entry(|e| {
         if e.depth() == 0 {
-            return true;
+            // Name rules don't apply to the library folder itself, excluded folders do.
+            return !options.excluded_folders.iter().any(|f| e.path().starts_with(f));
         }
-        if is_skipped(e.file_name(), options) {
+        if options.skips(e.path()) {
             return false;
         }
         // Directories tagged as caches (CACHEDIR.TAG) hold nothing worth searching.

@@ -10,6 +10,7 @@ results appear as you type, with typo-tolerant full-text search.
 - Quick preview (Space) with every match highlighted; CSV as a table, Markdown formatted
 - Results in GNOME Shell's search and KDE's KRunner
 - Keeps the index up to date as files change; optional background indexing
+- Exclude folders (like `~/Downloads/private`) or names and patterns (like `*.log`) in Settings → Library
 - Indexing runs at idle CPU and disk priority; risky parsers (PDF, legacy Word) run in
   isolated helper processes with a time limit and memory cap
 - GTK4 + libadwaita, English and Spanish; works on GNOME and KDE Plasma; read-only file access

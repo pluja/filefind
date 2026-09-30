@@ -182,6 +182,8 @@ impl Sidebar {
         hint.add_css_class("dim-label");
         hint.add_css_class("caption");
 
+        let exclude = gtk::Button::builder().label(tr("Exclude a Subfolder…")).build();
+        exclude.add_css_class("flat");
         let reveal = gtk::Button::builder().label(tr("Open in File Manager")).build();
         reveal.add_css_class("flat");
         let remove = gtk::Button::builder().label(tr("Remove from Library")).build();
@@ -196,6 +198,7 @@ impl Sidebar {
         content.append(&switch_row);
         content.append(&hint);
         content.append(&gtk::Separator::new(gtk::Orientation::Horizontal));
+        content.append(&exclude);
         content.append(&reveal);
         content.append(&remove);
         let popover = gtk::Popover::builder().child(&content).build();
@@ -206,6 +209,11 @@ impl Sidebar {
             popover.popdown();
             sidebar.backend.update_library(|lib| lib.set_include_subfolders(&path, include));
             glib::Propagation::Proceed
+        }));
+        exclude.connect_clicked(glib::clone!(#[weak(rename_to = sidebar)] self, #[weak] popover, #[strong] path, move |_| {
+            popover.popdown();
+            let window = popover.root().and_downcast::<gtk::Window>();
+            crate::preferences::choose_excluded_folder(&sidebar.backend, window.as_ref(), Some(&path));
         }));
         reveal.connect_clicked(glib::clone!(#[weak] popover, #[strong] path, move |_| {
             popover.popdown();

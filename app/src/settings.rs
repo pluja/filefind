@@ -12,6 +12,8 @@ pub struct Settings {
     pub max_results: usize,
     pub file_names: bool,
     pub hidden_files: bool,
+    pub excluded_folders: Vec<PathBuf>,
+    pub excluded_names: Vec<String>,
     /// Keep indexing when the window is closed, and start at login.
     pub background: bool,
     /// `None` means the default location in the app's data directory.
@@ -29,6 +31,8 @@ impl Default for Settings {
             max_results: 100,
             file_names: true,
             hidden_files: false,
+            excluded_folders: Vec::new(),
+            excluded_names: filefind_core::filter::DEFAULT_EXCLUDED_NAMES.map(String::from).to_vec(),
             background: false,
             index_dir: None,
             sort: SortOrder::Relevance,
@@ -48,7 +52,12 @@ impl Settings {
     }
 
     pub fn index_options(&self) -> IndexOptions {
-        IndexOptions { file_names: self.file_names, hidden_files: self.hidden_files }
+        IndexOptions {
+            file_names: self.file_names,
+            hidden_files: self.hidden_files,
+            excluded_folders: self.excluded_folders.clone(),
+            excluded_names: self.excluded_names.clone(),
+        }
     }
 }
 

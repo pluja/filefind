@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: filefind\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 12:51+0300\n"
+"POT-Creation-Date: 2026-09-30 15:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -206,7 +206,7 @@ msgstr ""
 msgid "Try it"
 msgstr ""
 
-#: app/src/preferences.rs:26 app/src/window.rs:467
+#: app/src/preferences.rs:26 app/src/window.rs:475
 msgid "Search"
 msgstr ""
 
@@ -271,87 +271,133 @@ msgid ""
 "Keep the index up to date while Filefind is closed, starting when you log in"
 msgstr ""
 
-#: app/src/preferences.rs:97
+#: app/src/preferences.rs:99
 msgid "Index"
 msgstr ""
 
-#: app/src/preferences.rs:99
+#: app/src/preferences.rs:101
 msgid "Files"
 msgstr ""
 
-#: app/src/preferences.rs:102
+#: app/src/preferences.rs:104
 msgid "Size on Disk"
 msgstr ""
 
-#: app/src/preferences.rs:106 app/src/preferences.rs:207
+#: app/src/preferences.rs:108 app/src/preferences.rs:335
 msgid "Files That Couldn't Be Read"
 msgstr ""
 
-#: app/src/preferences.rs:117
+#: app/src/preferences.rs:119
 msgid "Reads every file again. Only needed if results seem wrong."
 msgstr ""
 
-#: app/src/preferences.rs:119
+#: app/src/preferences.rs:121
 msgid "Rebuild Index"
 msgstr ""
 
-#: app/src/preferences.rs:121
+#: app/src/preferences.rs:123
 msgid "Advanced"
 msgstr ""
 
-#: app/src/preferences.rs:122
+#: app/src/preferences.rs:124
 msgid "Index Location"
 msgstr ""
 
-#: app/src/preferences.rs:124
+#: app/src/preferences.rs:126
 msgid ""
 "The index is stored with Filefind's other data. Move it only if you want it "
 "on another disk, for example a larger one."
 msgstr ""
 
-#: app/src/preferences.rs:131
+#: app/src/preferences.rs:133
 msgid "Choose Another Location…"
 msgstr ""
 
-#: app/src/preferences.rs:132
+#: app/src/preferences.rs:134
 msgid "Use Default Location"
 msgstr ""
 
-#: app/src/preferences.rs:168
+#: app/src/preferences.rs:170
 msgid "Index moved"
 msgstr ""
 
-#: app/src/preferences.rs:176
+#: app/src/preferences.rs:178
 msgid "Choose Where to Keep the Index"
 msgstr ""
 
-#: app/src/preferences.rs:199
+#: app/src/preferences.rs:219
+msgid "Remove"
+msgstr ""
+
+#: app/src/preferences.rs:233
+msgid "Exclude a Folder…"
+msgstr ""
+
+#: app/src/preferences.rs:236
+msgid "Excluded Folders"
+msgstr ""
+
+#: app/src/preferences.rs:237
+msgid "Nothing inside these folders is indexed."
+msgstr ""
+
+#: app/src/preferences.rs:246
+msgid "No excluded folders"
+msgstr ""
+
+#: app/src/preferences.rs:264
+msgid "Exclude a Folder"
+msgstr ""
+
+#: app/src/preferences.rs:264
+msgid "Exclude"
+msgstr ""
+
+#: app/src/preferences.rs:282
+msgid "Excluded Names"
+msgstr ""
+
+#: app/src/preferences.rs:283
+msgid ""
+"Files and folders with a matching name are skipped wherever they are. Use * "
+"as a wildcard, as in *.log or draft-*."
+msgstr ""
+
+#: app/src/preferences.rs:285
+msgid "Add a name or pattern"
+msgstr ""
+
+#: app/src/preferences.rs:292
+msgid "To skip a folder by its location, add it under Excluded Folders."
+msgstr ""
+
+#: app/src/preferences.rs:327
 msgid "Password protected"
 msgstr ""
 
-#: app/src/preferences.rs:200
+#: app/src/preferences.rs:328
 msgid "Took too long to read"
 msgstr ""
 
-#: app/src/preferences.rs:201
+#: app/src/preferences.rs:329
 msgid "Couldn't be read safely"
 msgstr ""
 
-#: app/src/preferences.rs:202
+#: app/src/preferences.rs:330
 msgid "Damaged or unsupported"
 msgstr ""
 
-#: app/src/preferences.rs:212
+#: app/src/preferences.rs:340
 msgid ""
 "These files are still found by name, but their contents can't be searched."
 msgstr ""
 
-#: app/src/preferences.rs:237 app/src/preview.rs:65 app/src/providers.rs:111
+#: app/src/preferences.rs:365 app/src/preview.rs:65 app/src/providers.rs:111
 #: app/src/results.rs:62 app/src/results.rs:125
 msgid "Show in Folder"
 msgstr ""
 
-#: app/src/preferences.rs:246
+#: app/src/preferences.rs:374
 msgid "Every file was read successfully."
 msgstr ""
 
@@ -440,64 +486,68 @@ msgid "Also search every folder inside “{}”."
 msgstr ""
 
 #: app/src/sidebar.rs:185
-msgid "Open in File Manager"
+msgid "Exclude a Subfolder…"
 msgstr ""
 
 #: app/src/sidebar.rs:187
+msgid "Open in File Manager"
+msgstr ""
+
+#: app/src/sidebar.rs:189
 msgid "Remove from Library"
 msgstr ""
 
-#: app/src/sidebar.rs:336 app/src/window.rs:631
+#: app/src/sidebar.rs:344 app/src/window.rs:639
 msgid "Looking for files…"
 msgstr ""
 
-#: app/src/sidebar.rs:337
+#: app/src/sidebar.rs:345
 msgid "{} file checked"
 msgid_plural "{} files checked"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/sidebar.rs:339 app/src/sidebar.rs:342
+#: app/src/sidebar.rs:347 app/src/sidebar.rs:350
 msgid "Indexing…"
 msgstr ""
 
-#: app/src/sidebar.rs:340 app/src/sidebar.rs:350
+#: app/src/sidebar.rs:348 app/src/sidebar.rs:358
 msgid "{} file indexed"
 msgid_plural "{} files indexed"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/sidebar.rs:349
+#: app/src/sidebar.rs:357
 msgid "Up to date"
 msgstr ""
 
-#: app/src/sidebar.rs:352
+#: app/src/sidebar.rs:360
 msgid "{} file couldn't be read"
 msgid_plural "{} files couldn't be read"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/sidebar.rs:357
+#: app/src/sidebar.rs:365
 msgid "Starting…"
 msgstr ""
 
-#: app/src/sidebar.rs:362
+#: app/src/sidebar.rs:370
 msgid "Index unavailable"
 msgstr ""
 
-#: app/src/sidebar.rs:363
+#: app/src/sidebar.rs:371
 msgid "Try Rebuild Index in Settings"
 msgstr ""
 
-#: app/src/sidebar.rs:369
+#: app/src/sidebar.rs:377
 msgid "{done} of {total}"
 msgstr ""
 
-#: app/src/sidebar.rs:387
+#: app/src/sidebar.rs:395
 msgid "less than a minute left"
 msgstr ""
 
-#: app/src/sidebar.rs:389
+#: app/src/sidebar.rs:397
 msgid "about {} minutes left"
 msgstr ""
 
@@ -563,166 +613,166 @@ msgstr ""
 msgid "Drop folders here to add them to your library"
 msgstr ""
 
-#: app/src/window.rs:428
+#: app/src/window.rs:434
 msgid "Rebuilding the index"
 msgstr ""
 
-#: app/src/window.rs:452
+#: app/src/window.rs:460
 msgid "The Filefind Contributors"
 msgstr ""
 
-#: app/src/window.rs:453
+#: app/src/window.rs:461
 msgid "Find any file by what's inside it."
 msgstr ""
 
-#: app/src/window.rs:455
+#: app/src/window.rs:463
 msgid "translator-credits"
 msgstr ""
 
-#: app/src/window.rs:464
+#: app/src/window.rs:472
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: app/src/window.rs:468
+#: app/src/window.rs:476
 msgid "Focus search"
 msgstr ""
 
-#: app/src/window.rs:469
+#: app/src/window.rs:477
 msgid "Open first result"
 msgstr ""
 
-#: app/src/window.rs:470
+#: app/src/window.rs:478
 msgid "Move to results"
 msgstr ""
 
-#: app/src/window.rs:471
+#: app/src/window.rs:479
 msgid "Clear search"
 msgstr ""
 
-#: app/src/window.rs:473
+#: app/src/window.rs:481
 msgid "Results"
 msgstr ""
 
-#: app/src/window.rs:474
+#: app/src/window.rs:482
 msgid "Open file"
 msgstr ""
 
-#: app/src/window.rs:474
+#: app/src/window.rs:482
 msgid "Enter or double-click"
 msgstr ""
 
-#: app/src/window.rs:475
+#: app/src/window.rs:483
 msgid "Quick preview"
 msgstr ""
 
-#: app/src/window.rs:475
+#: app/src/window.rs:483
 msgid "Space"
 msgstr ""
 
-#: app/src/window.rs:476
+#: app/src/window.rs:484
 msgid "Show in folder"
 msgstr ""
 
-#: app/src/window.rs:477
+#: app/src/window.rs:485
 msgid "Copy path"
 msgstr ""
 
-#: app/src/window.rs:478
+#: app/src/window.rs:486
 msgid "More actions"
 msgstr ""
 
-#: app/src/window.rs:478
+#: app/src/window.rs:486
 msgid "Right-click"
 msgstr ""
 
-#: app/src/window.rs:480
+#: app/src/window.rs:488
 msgid "Window"
 msgstr ""
 
-#: app/src/window.rs:481
+#: app/src/window.rs:489
 msgid "Show or hide the library"
 msgstr ""
 
-#: app/src/window.rs:482
+#: app/src/window.rs:490
 msgid "Add folder"
 msgstr ""
 
-#: app/src/window.rs:483
+#: app/src/window.rs:491
 msgid "Settings"
 msgstr ""
 
-#: app/src/window.rs:484
+#: app/src/window.rs:492
 msgid "Close window"
 msgstr ""
 
-#: app/src/window.rs:485
+#: app/src/window.rs:493
 msgid "Quit"
 msgstr ""
 
-#: app/src/window.rs:564
+#: app/src/window.rs:572
 msgid "Top {shown} of {total} results"
 msgstr ""
 
-#: app/src/window.rs:568
+#: app/src/window.rs:576
 msgid "{} result"
 msgid_plural "{} results"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/window.rs:612
+#: app/src/window.rs:620
 msgid "{files} file in {folders}"
 msgid_plural "{files} files in {folders}"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/window.rs:614
+#: app/src/window.rs:622
 msgid "{} folder"
 msgid_plural "{} folders"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/window.rs:615
+#: app/src/window.rs:623
 msgid "Reading your files. You can start searching right away."
 msgstr ""
 
-#: app/src/window.rs:624
+#: app/src/window.rs:632
 msgid "Indexing… {} file so far"
 msgid_plural "Indexing… {} files so far"
 msgstr[0] ""
 msgstr[1] ""
 
-#: app/src/window.rs:627
+#: app/src/window.rs:635
 msgid "Indexing {done} of {total} files…"
 msgstr ""
 
-#: app/src/window.rs:662
+#: app/src/window.rs:670
 msgid "Could not open the file"
 msgstr ""
 
-#: app/src/window.rs:668
+#: app/src/window.rs:676
 msgid "Could not show the folder"
 msgstr ""
 
-#: app/src/window.rs:674
+#: app/src/window.rs:682
 msgid "Path copied"
 msgstr ""
 
-#: app/src/window.rs:678
+#: app/src/window.rs:686
 msgid "Add Folders to Library"
 msgstr ""
 
-#: app/src/window.rs:678
+#: app/src/window.rs:686
 msgid "Add"
 msgstr ""
 
-#: app/src/window.rs:695
+#: app/src/window.rs:703
 msgid "“{}” is already in your library"
 msgstr ""
 
-#: app/src/window.rs:696
+#: app/src/window.rs:704
 msgid "“{}” replaces the folders inside it"
 msgstr ""
 
-#: app/src/window.rs:704
+#: app/src/window.rs:712
 msgid "Removed “{}” from your library"
 msgstr ""

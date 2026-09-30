@@ -356,13 +356,18 @@ fn wire_results(state: &Rc<State>) {
     list.add_controller(keys);
 }
 
-/// Development aid: `FILEFIND_SNAPSHOT=out.png [FILEFIND_QUERY=text]` renders the window to a PNG.
+/// Development aid: `FILEFIND_SNAPSHOT=out.png` renders the window to a PNG, optionally after
+/// searching (`FILEFIND_QUERY`), opening the preview (`FILEFIND_PREVIEW`) or a settings page
+/// (`FILEFIND_SETTINGS_PAGE`).
 fn dev_snapshot(state: &Rc<State>) {
     let Some(out) = std::env::var_os("FILEFIND_SNAPSHOT") else { return };
     if let Ok(query) = std::env::var("FILEFIND_QUERY") {
         state.search.set_text(&query);
     }
     let preview = std::env::var_os("FILEFIND_PREVIEW").is_some();
+    if let Ok(page) = std::env::var("FILEFIND_SETTINGS_PAGE") {
+        crate::preferences::present(&state.window, &state.backend).set_visible_page_name(&page);
+    }
     let state = state.clone();
     glib::timeout_add_local_once(std::time::Duration::from_secs(3), move || {
         if preview {
@@ -383,7 +388,8 @@ fn dev_snapshot(state: &Rc<State>) {
                     log::error!("snapshot: {e}");
                 }
             }
-            window.close();
+            // Not close(): with a dialog open, that would only close the dialog.
+            window.destroy();
         });
     });
 }
@@ -427,7 +433,9 @@ fn install_actions(state: &Rc<State>) {
             s.backend.rebuild();
             s.toast(&tr("Rebuilding the index"));
         }),
-        simple("settings", |s| crate::preferences::present(&s.window, &s.backend)),
+        simple("settings", |s| {
+            crate::preferences::present(&s.window, &s.backend);
+        }),
         simple("show-failures", |s| crate::preferences::present_failures(&s.window, &s.backend)),
         simple("search-tips", |s| {
             let weak = Rc::downgrade(s);

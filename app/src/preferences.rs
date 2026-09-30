@@ -18,12 +18,12 @@ fn switch_row(title: &str, subtitle: &str, active: bool, apply: impl Fn(bool) + 
     row
 }
 
-pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) {
+pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) -> adw::PreferencesDialog {
     let settings = backend.settings();
     let dialog = adw::PreferencesDialog::builder().search_enabled(false).build();
 
     // Search
-    let search = adw::PreferencesPage::builder().title(tr("Search")).icon_name("system-search-symbolic").build();
+    let search = adw::PreferencesPage::builder().name("search").title(tr("Search")).icon_name("system-search-symbolic").build();
     let general = adw::PreferencesGroup::new();
     let mut names = vec![tr("System Default")];
     names.extend(crate::i18n::LANGUAGES.iter().map(|(_, name)| name.to_string()));
@@ -66,7 +66,7 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) {
     search.add(&tips_group);
 
     // Library
-    let library = adw::PreferencesPage::builder().title(tr("Library")).icon_name("folder-symbolic").build();
+    let library = adw::PreferencesPage::builder().name("library").title(tr("Library")).icon_name("folder-symbolic").build();
     let what = adw::PreferencesGroup::builder().title(tr("What to Index")).build();
     let b = backend.clone();
     what.add(&switch_row(
@@ -91,10 +91,12 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) {
         move |on| b.update_settings(|s| s.background = on),
     ));
     library.add(&what);
+    library.add(&excluded_folders_group(backend, &dialog));
+    library.add(&excluded_names_group(backend, &dialog));
     library.add(&when);
 
     // Index
-    let index = adw::PreferencesPage::builder().title(tr("Index")).icon_name("drive-harddisk-symbolic").build();
+    let index = adw::PreferencesPage::builder().name("index").title(tr("Index")).icon_name("drive-harddisk-symbolic").build();
     let status = adw::PreferencesGroup::new();
     let files = adw::ActionRow::builder().title(tr("Files")).build();
     let files_value = value_label();
@@ -185,6 +187,132 @@ pub fn present(parent: &impl IsA<gtk::Widget>, backend: &Rc<Backend>) {
     reset.connect_activated(move |_| move_to(None));
 
     dialog.present(Some(parent));
+    dialog
+}
+
+/// A group whose rows are rebuilt from the settings whenever they change.
+fn live_group(backend: &Rc<Backend>, group: &adw::PreferencesGroup, dialog: &adw::PreferencesDialog, rows: impl Fn(&Rc<Backend>) -> Vec<gtk::Widget> + 'static) {
+    let shown: Rc<std::cell::RefCell<Vec<gtk::Widget>>> = Rc::default();
+    let refresh = glib::clone!(#[weak] backend, #[weak] group, #[strong] shown, move || {
+        for row in shown.borrow_mut().drain(..) {
+            group.remove(&row);
+        }
+        for row in rows(&backend) {
+            group.add(&row);
+            shown.borrow_mut().push(row);
+        }
+    });
+    refresh();
+    let subscription = backend.subscribe(refresh);
+    let b = backend.clone();
+    dialog.connect_closed(move |_| b.unsubscribe(subscription));
+}
+
+fn removable_row(title: &str, subtitle: Option<&str>, icon: Option<&str>, remove: impl Fn() + 'static) -> gtk::Widget {
+    let row = adw::ActionRow::builder().title(glib::markup_escape_text(title)).build();
+    if let Some(subtitle) = subtitle {
+        row.set_subtitle(&glib::markup_escape_text(subtitle));
+    }
+    if let Some(icon) = icon {
+        row.add_prefix(&gtk::Image::from_icon_name(icon));
+    }
+    let button = gtk::Button::builder().icon_name("user-trash-symbolic").tooltip_text(tr("Remove")).valign(gtk::Align::Center).build();
+    button.add_css_class("flat");
+    button.connect_clicked(move |_| remove());
+    row.add_suffix(&button);
+    row.upcast()
+}
+
+fn placeholder_row(text: &str) -> gtk::Widget {
+    let row = adw::ActionRow::builder().title(text).build();
+    row.add_css_class("dim-label");
+    row.upcast()
+}
+
+fn excluded_folders_group(backend: &Rc<Backend>, dialog: &adw::PreferencesDialog) -> adw::PreferencesGroup {
+    let add = gtk::Button::builder().icon_name("list-add-symbolic").tooltip_text(tr("Exclude a Folder…")).valign(gtk::Align::Center).build();
+    add.add_css_class("flat");
+    let group = adw::PreferencesGroup::builder()
+        .title(tr("Excluded Folders"))
+        .description(tr("Nothing inside these folders is indexed."))
+        .header_suffix(&add)
+        .build();
+    add.connect_clicked(glib::clone!(#[weak] backend, move |button| {
+        choose_excluded_folder(&backend, button.root().and_downcast_ref::<gtk::Window>(), None);
+    }));
+    live_group(backend, &group, dialog, |backend| {
+        let folders = backend.settings().excluded_folders;
+        if folders.is_empty() {
+            return vec![placeholder_row(&tr("No excluded folders"))];
+        }
+        folders
+            .into_iter()
+            .map(|folder| {
+                let b = backend.clone();
+                let target = folder.clone();
+                removable_row(&crate::window::display_name(&folder), Some(&display_path(&folder)), Some("folder-symbolic"), move || {
+                    b.update_settings(|s| s.excluded_folders.retain(|f| f != &target))
+                })
+            })
+            .collect()
+    });
+    group
+}
+
+/// Asks for a folder to exclude, starting in `start` (e.g. a library folder).
+pub fn choose_excluded_folder(backend: &Rc<Backend>, parent: Option<&gtk::Window>, start: Option<&std::path::Path>) {
+    let chooser = gtk::FileDialog::builder().title(tr("Exclude a Folder")).accept_label(tr("Exclude")).modal(true).build();
+    if let Some(start) = start {
+        chooser.set_initial_folder(Some(&gio::File::for_path(start)));
+    }
+    let backend = backend.clone();
+    chooser.select_folder(parent, gio::Cancellable::NONE, move |res| {
+        let Some(path) = res.ok().and_then(|f| f.path()) else { return };
+        backend.update_settings(|s| {
+            if !s.excluded_folders.contains(&path) {
+                s.excluded_folders.push(path);
+                s.excluded_folders.sort();
+            }
+        });
+    });
+}
+
+fn excluded_names_group(backend: &Rc<Backend>, dialog: &adw::PreferencesDialog) -> adw::PreferencesGroup {
+    let group = adw::PreferencesGroup::builder()
+        .title(tr("Excluded Names"))
+        .description(tr("Files and folders with a matching name are skipped wherever they are. Use * as a wildcard, as in *.log or draft-*."))
+        .build();
+    let entry = adw::EntryRow::builder().title(tr("Add a name or pattern")).show_apply_button(true).build();
+    entry.connect_apply(glib::clone!(#[weak] backend, #[weak] dialog, move |entry| {
+        let pattern = entry.text().trim().to_owned();
+        if pattern.is_empty() {
+            return;
+        }
+        if pattern.contains('/') {
+            dialog.add_toast(adw::Toast::new(&tr("To skip a folder by its location, add it under Excluded Folders.")));
+            return;
+        }
+        backend.update_settings(|s| {
+            if !s.excluded_names.contains(&pattern) {
+                s.excluded_names.push(pattern);
+            }
+        });
+        entry.set_text("");
+    }));
+    group.add(&entry);
+    live_group(backend, &group, dialog, |backend| {
+        backend
+            .settings()
+            .excluded_names
+            .into_iter()
+            .map(|pattern| {
+                let b = backend.clone();
+                let target = pattern.clone();
+                removable_row(&pattern, None, None, move || b.update_settings(|s| s.excluded_names.retain(|p| p != &target)))
+            })
+            .collect()
+    });
+    group
 }
 
 fn value_label() -> gtk::Label {
